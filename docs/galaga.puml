@@ -1,0 +1,91 @@
+@startuml galaga
+
+class Alien{
+    - valor : int
+}
+class Enemigo{
+    - posX
+    - posY
+    + MoverDerecha()
+    + MoverIzquierda()
+    + MoverArriba()
+    + MoverAbajo()
+    + Disparar()
+    + Morir()
+    + Aparecer()
+}
+class Escorpion
+class Mosca
+class Abeja
+
+class Jugador{
+    + Jugar()
+}
+class Nave{
+    - posX
+    - posY
+    + MoverDerecha()
+    + MoverIzquierda()
+    + Disparar()
+    + Morir()
+    + Reaparecer()
+}
+class Proyectil{
+    - posX
+    - posY
+    + Colisionar()
+}
+class Colisionable{
+    - acumulado : int
+    + DetectarColision()
+}
+
+class Juego{
+    + Iniciar()
+    + Terminar()
+}
+class Nivel{
+    - duracion : int
+    + Inciar()
+    + Completar()
+    + Perder()
+}
+class Vida{
+    - cantidad : int
+    + Restar()
+    + Reestablecer()
+}
+class Puntuacion{
+    - nivel1 : int
+    - nivel2 : int
+    - nivel3 : int
+    + Acumular()
+    + Reestablecer()
+    + ObtenerPuntuacion()
+}
+
+Juego "1" *-- "1" Jugador
+Juego "1" *-- "3" Nivel
+
+Jugador "1" o-- "1" Nave
+Jugador "1" *-- "3" Vida
+Jugador "1" o-- "*" Proyectil
+Enemigo "1" o-- "*" Proyectil
+Jugador "1" *-- "1" Puntuacion
+Nivel "1" *-- "1" Puntuacion
+Nivel "1" *-- "*" Enemigo
+
+Alien --|> Enemigo
+Escorpion --|> Alien
+Abeja --|> Alien
+Mosca --|> Alien
+
+Proyectil o-- Colisionable
+Enemigo --|> Colisionable
+Nave --|> Colisionable
+
+
+
+
+
+@enduml
