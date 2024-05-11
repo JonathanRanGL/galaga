@@ -1,4 +1,6 @@
+
 # **Galaga Game**
+![Portada Galaga](https://cdn.clarosports.com/clarosports/2023/06/galaga-144927-1024x576.jpg)
 ___
 El proyecto tiene como objetivo desarrollar un videojuego basado en texto, utilizando arte ASCII, inspirado en el clásico juego arcade Galaga.
 
@@ -16,7 +18,7 @@ El proyecto sigue una estructura organizada en varias carpetas para una gestión
 
 * assets/: Aquí se almacenan los recursos del juego, como el arte ASCII para la nave del jugador, los enemigos, efectos de sonido, etc.
 
-* ocs/: Contiene documentación relevante del proyecto, como diagramas UML, especificaciones de diseño y otros documentos.
+* docs/: Contiene documentación relevante del proyecto, como diagramas UML, especificaciones de diseño y otros documentos.
 
 * README.md: Un archivo de markdown que proporciona una descripción general del proyecto, instrucciones de instalación, ejecución y cualquier otra información relevante.
 
