@@ -11,6 +11,10 @@ private:
     sf::VideoMode videoMode;
     sf::Event event;
 
+    //Objetos dentro del juego
+
+    sf::RectangleShape nave;
+
     // Funciones privadas
 
     void initVariables()
@@ -20,10 +24,20 @@ private:
 
     void initWindow()
     {
-        this->videoMode.height = 800;
+        this->videoMode.height = 600;
         this->videoMode.width = 600;
 
         this->window = new sf::RenderWindow(this->videoMode, "Galaga", sf::Style::Titlebar | sf::Style::Close);
+
+        //this->window->setFramerateLimit(165);
+    }
+
+    void initPlayer()
+    {
+        this->nave.setPosition(250.f, 100.f);
+        
+        this->nave.setSize(sf::Vector2f(50.f, 50.f));
+        this->nave.setFillColor(sf::Color::Red);
     }
 
 public:
@@ -32,6 +46,7 @@ public:
     {
         this->initVariables();
         this->initWindow();
+        this->initPlayer();
     }
 
     ~Game()
@@ -87,7 +102,9 @@ public:
         this->window->clear();
 
         //Dibujar elementos en ventana
+        this->window->draw(this->nave);
 
         this->window->display();
     }
+
 };
