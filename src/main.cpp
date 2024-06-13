@@ -1,43 +1,19 @@
 #include <SFML/Graphics.hpp>
+#include <Game.hpp>
 
 int main()
 {
-    // Crear una ventana de SFML
-    sf::RenderWindow window(sf::VideoMode(768, 1024), "SFML works!",sf::Style::Titlebar | sf::Style::Close);
-    
+    Game game;
 
-    // Crear una forma circular de SFML
-    sf::CircleShape shape(100.f);
-    shape.setFillColor(sf::Color::Red);
-    sf::Event event;
-
-    while (window.isOpen())
+    while (game.running()) // Revisa constantemente si la ventana sigue abierta
     {
-        while(window.pollEvent(event))
-        {
-            switch(event.type)
-            {
-                case sf::Event::Closed:
-                    window.close();
-                    break;
-                
-                case sf::Event::KeyPressed:
-                    if(event.key.code == sf::Keyboard::Escape){window.close();}
-                    break;
-
-            }
-        }
-
         
+        // Update
+        game.update();
 
-        // Renderizar
-        window.clear();
+        // Render
+        game.render();
 
-        // Dibujar la forma en la ventana
-        window.draw(shape);
-
-        // Mostrar la ventana
-        window.display();
     }
 
     return 0;
