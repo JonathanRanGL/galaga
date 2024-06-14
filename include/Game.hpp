@@ -24,12 +24,12 @@ private:
 
     void initWindow()
     {
-        this->videoMode.height = 600;
+        this->videoMode.height = 800;
         this->videoMode.width = 600;
 
         this->window = new sf::RenderWindow(this->videoMode, "Galaga", sf::Style::Titlebar | sf::Style::Close);
 
-        //this->window->setFramerateLimit(165);
+        this->window->setFramerateLimit(165);
     }
 
     void initPlayer()
