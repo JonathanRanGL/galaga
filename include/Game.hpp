@@ -1,19 +1,28 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <SFML/Window.hpp>
+#include <SFML/System.hpp>
+#include <SFML/Audio.hpp>
+
+#include <Nave.hpp>
 
 class Game
 {
 private:
     // Variables
+
+    bool endGame;
+
     // Window
 
     sf::RenderWindow *window;
     sf::VideoMode videoMode;
     sf::Event event;
+    
 
     //Objetos dentro del juego
 
-    sf::RectangleShape nave;
+    Nave nave;
 
     // Funciones privadas
 
@@ -24,23 +33,27 @@ private:
 
     void initWindow()
     {
-        this->videoMode.height = 600;
+        this->videoMode.height = 800;
         this->videoMode.width = 600;
-
+    
         this->window = new sf::RenderWindow(this->videoMode, "Galaga", sf::Style::Titlebar | sf::Style::Close);
-
         this->window->setFramerateLimit(165);
     }
 
+    
     void initPlayer()
     {
-        this->nave.setPosition(250.f, 100.f);
         
-        this->nave.setSize(sf::Vector2f(50.f, 50.f));
+        
+        /*
+        this->nave.setPosition(280.f, 700.f);
+        this->nave.setSize(sf::Vector2f(40.f, 40.f));
         this->nave.setFillColor(sf::Color::Red);
+        */
     }
 
 public:
+    
     // Constructor y Destructor
     Game(/* args */)
     {
@@ -86,6 +99,9 @@ public:
     void update()
     {
         this->pollEvents();
+
+        this->nave.update(this->window);
+
     }
     
     void render() 
@@ -102,7 +118,10 @@ public:
         this->window->clear();
 
         //Dibujar elementos en ventana
-        this->window->draw(this->nave);
+        
+        this->nave.render(this->window);
+
+        //Una vez dibujados los elementos, se muestra la ventana (Equivale a 1 frame)
 
         this->window->display();
     }

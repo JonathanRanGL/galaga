@@ -24,6 +24,7 @@ class Jugador{
 class Nave{
     - posX
     - posY
+    - textura
     + MoverDerecha()
     + MoverIzquierda()
     + Disparar()
@@ -33,6 +34,7 @@ class Nave{
 class Proyectil{
     - posX
     - posY
+    - velocidad
     + Colisionar()
 }
 class Colisionable{
@@ -69,7 +71,7 @@ Juego "1" *-- "3" Nivel
 
 Jugador "1" o-- "1" Nave
 Jugador "1" *-- "3" Vida
-Jugador "1" o-- "*" Proyectil
+Nave "1" o-- "*" Proyectil
 Enemigo "1" o-- "*" Proyectil
 Jugador "1" *-- "1" Puntuacion
 Nivel "1" *-- "1" Puntuacion
