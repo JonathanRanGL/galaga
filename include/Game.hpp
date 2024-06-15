@@ -3,9 +3,11 @@
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
 #include <SFML/Audio.hpp>
+#include <iostream>
 
 #include <Nave.hpp>
 #include <Proyectil.hpp>
+#include <Enemigo.hpp>
 
 class Game
 {
@@ -14,6 +16,11 @@ private:
 
     bool endGame;
     
+    float waveTimer;
+    float waveTimerMax;
+
+    float spawnTimer;
+    float spawnTimerMax;
 
     // Window
 
@@ -21,42 +28,62 @@ private:
     sf::VideoMode videoMode;
     sf::Event event;
 
-    //Objetos dentro del juego
+    // Objetos dentro del juego
 
     Nave nave;
+    std::vector<Enemigo *> enemigos;
 
     // Funciones privadas
 
     void initVariables()
     {
         this->window = nullptr;
+
+        this->spawnTimerMax = 50.f;
+        this->spawnTimer = this->spawnTimerMax;
+
+        this->waveTimerMax = 100.f;
+        this->waveTimer = this->waveTimerMax;
     }
 
     void initWindow()
     {
         this->videoMode.height = 800;
         this->videoMode.width = 600;
-    
+
         this->window = new sf::RenderWindow(this->videoMode, "Galaga", sf::Style::Titlebar | sf::Style::Close);
+     
         this->window->setFramerateLimit(165);
     }
 
+    void initEntities()
+    {
+        //Inicializando enemigos
+        //this->enemigo = new Enemigo(this->window->getSize().x / 2, 0.f);
+    }
+
 public:
-    
     // Constructor y Destructor
     Game(/* args */)
     {
         this->initVariables();
         this->initWindow();
+        this->initEntities();
     }
 
     ~Game()
     {
         delete this->window;
+
+        // Eliminar enemigos
+        for(auto *i : this->enemigos)
+        {
+            delete i;
+        }
     }
 
     // Evaluadores (retornan algo)
-    
+
     const bool running() const
     {
         return this->window->isOpen();
@@ -84,17 +111,36 @@ public:
         }
     }
 
-    
-    
+    void updateEnemigos()
+    {
+        //this->spawnTimer += 1.f;
+        if (this->spawnTimer >= this->spawnTimerMax)
+        {
+            this->enemigos.push_back(new Enemigo(320.f, 0.f));
+            this->spawnTimer = 0.f;
+        }
+        
+        
+        for(int i = 0 ; i < this->enemigos.size(); i++)
+        {
+            this->enemigos[i]->update();
+        }
+        
+    }
+
     void update()
     {
+        //Actualiza los eventos de la ventana
         this->pollEvents();
 
+        //Actualiza todo lo relacionado con la nave, como su posición, proyectiles, etc.
         this->nave.update(this->window);
 
+        //Actualiza todo lo relacionado con los enemigos, como su posición, movimiento, estado, etc.
+        this->updateEnemigos();
     }
-    
-    void render() 
+
+    void render()
     {
         /*
             Muestra en la ventana del juego todos los elementos
@@ -104,18 +150,20 @@ public:
             - Dibuja todos los elementos especificados
             - Muestra el frame
         */
-        
+
         this->window->clear();
 
-        //Dibujar elementos en ventana
-        
+        // Dibujar elementos en ventana
+
         this->nave.render(this->window);
 
-        
+        for(auto *Enemigo : this->enemigos)
+        {
+            Enemigo->render(this->window);
+        }
 
-        //Una vez dibujados los elementos, se muestra la ventana (Equivale a 1 frame)
+        // Una vez dibujados los elementos, se muestra la ventana (Equivale a 1 frame)
 
         this->window->display();
     }
-
 };

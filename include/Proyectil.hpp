@@ -7,21 +7,18 @@
 class Proyectil
 {
 private:
-    
-    //Variables
+    // Variables
     sf::RectangleShape proyectil;
     sf::Vector2f direction;
-    
+
     float muzzleVelocity;
 
 public:
-
-    //Funciones
+    // Funciones
 
     void innitVariables()
     {
         this->muzzleVelocity = 7.f;
-        
     }
 
     void innitProyectil()
@@ -37,7 +34,7 @@ public:
 
     void update()
     {
-        
+
         this->proyectil.move(this->direction * this->muzzleVelocity);
     }
 
@@ -46,7 +43,7 @@ public:
         target->draw(this->proyectil);
     }
 
-    Proyectil(float dirX, float dirY, float posX, float posY) 
+    Proyectil(float dirX, float dirY, float posX, float posY)
     {
         this->innitVariables();
         this->innitProyectil();
