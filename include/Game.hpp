@@ -5,6 +5,7 @@
 #include <SFML/Audio.hpp>
 
 #include <Nave.hpp>
+#include <Proyectil.hpp>
 
 class Game
 {
@@ -12,13 +13,13 @@ private:
     // Variables
 
     bool endGame;
+    
 
     // Window
 
     sf::RenderWindow *window;
     sf::VideoMode videoMode;
     sf::Event event;
-    
 
     //Objetos dentro del juego
 
@@ -40,18 +41,6 @@ private:
         this->window->setFramerateLimit(165);
     }
 
-    
-    void initPlayer()
-    {
-        
-        
-        /*
-        this->nave.setPosition(280.f, 700.f);
-        this->nave.setSize(sf::Vector2f(40.f, 40.f));
-        this->nave.setFillColor(sf::Color::Red);
-        */
-    }
-
 public:
     
     // Constructor y Destructor
@@ -59,7 +48,6 @@ public:
     {
         this->initVariables();
         this->initWindow();
-        this->initPlayer();
     }
 
     ~Game()
@@ -95,6 +83,8 @@ public:
             }
         }
     }
+
+    
     
     void update()
     {
@@ -120,6 +110,8 @@ public:
         //Dibujar elementos en ventana
         
         this->nave.render(this->window);
+
+        
 
         //Una vez dibujados los elementos, se muestra la ventana (Equivale a 1 frame)
 

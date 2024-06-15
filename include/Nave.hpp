@@ -3,6 +3,10 @@
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
 #include <SFML/Audio.hpp>
+#include <iostream>
+
+#include <Proyectil.hpp>
+
 
 class Nave
 {
@@ -10,6 +14,10 @@ private:
     // Variables
     sf::RectangleShape nave;
     double speed;
+    float shootCooldown;
+    float shootCooldownLimit;
+    
+    std::vector<Proyectil*> proyectiles; //Vector que almacena los punteros hacia los proyectiles
 
 public:
     
@@ -18,6 +26,9 @@ public:
     void innitVariables()
     {
         this->speed = 3.f;
+        this->shootCooldownLimit = 60.f;
+        this->shootCooldown = this->shootCooldownLimit;
+        
     }
 
     void innitShape()
@@ -53,6 +64,12 @@ public:
         {
             this->nave.move(this->speed, 0.f);
         }
+
+        // Disparo (SPACE)
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) && this->canShoot())
+        {
+            this->proyectiles.push_back(new Proyectil(0.f, -1.f, nave.getPosition().x + nave.getSize().x/2, nave.getPosition().y));
+        }
     }
 
     void updateBoundCollsion(const sf::RenderTarget *target)
@@ -71,10 +88,57 @@ public:
         {
             this->nave.setPosition(target->getSize().x - this->nave.getGlobalBounds().width, posNave.y);
         }
+    }
 
-            
-            
+    void updateCooldown()
+    {
+        if (this->shootCooldown < this->shootCooldownLimit)
+        {
+            this->shootCooldown += 1.f;
+        }
+    }
+
+    const bool canShoot()
+    {
+        if(this->shootCooldown >= this->shootCooldownLimit)
+        {
+            this->shootCooldown = 0.f;
+            return true;
+        }
+        return false;
+    }
+
+    void updateProyectiles()
+    {
         
+        unsigned counter = 0;
+        for(auto *proyectil : this->proyectiles)
+        {
+            proyectil->update();
+
+            /*
+            Esta sección de esta función se encarga de eliminar los proyectiles que salgan
+            de la pantalla, para ello se revisa el borde inferior del proyectil, si este
+            se encuentra fuera de la ventana, se elimina el proyectil en la posición del vector
+            que le corresponde empezando desde el inicio del arreglo e incrementando con ayuda 
+            de un contador cada que se actualiza un proyectil.
+            */
+            if(proyectil->getBounds().top + proyectil->getBounds().height <= 0.f)
+            {
+                delete this->proyectiles.at(counter);
+                this->proyectiles.erase(this->proyectiles.begin() + counter);
+                
+                /*
+                Cuando borre un proyectil se reduce también el tamaño del vector
+                por lo que se reduce el contador para que no se salte un proyectil.
+                */
+                --counter; 
+
+                std::cout << this->proyectiles.size() << std::endl;
+            }
+
+            ++counter;
+        }
     }
 
     void update(const sf::RenderTarget *target)
@@ -84,6 +148,12 @@ public:
 
         // Colisión con los bordes de la ventana
         this->updateBoundCollsion(target);
+
+        // Actualización de los proyectiles
+        this->updateProyectiles();
+
+        // Actualización del cooldown de disparo
+        this->updateCooldown();
     }
 
     void render(sf::RenderTarget *target)
@@ -94,8 +164,19 @@ public:
         para ello se usa un objetivo sobre el cual se dibujará la nave llamado
         RenderTarget.
         */
+
+       for(auto *proyectil : this->proyectiles)
+        {
+            proyectil->render(target);
+        }
+           
+        
+
         target->draw(this->nave);
     }
+        
+
+        
 
     // Constructor y Destructor
     Nave(float posX = -1.f, float posY = -1.f)
@@ -113,5 +194,13 @@ public:
         }
         
     }
-    ~Nave() {}
+    ~Nave()
+    {
+        
+        //Eliminación de los proyectiles
+        for (auto *i : this->proyectiles)
+        {
+            delete i;
+        }
+    }
 };
