@@ -4,6 +4,7 @@
 #include <SFML/System.hpp>
 #include <SFML/Audio.hpp>
 #include <iostream>
+#include <math.h>
 
 #include <Nave.hpp>
 #include <Proyectil.hpp>
@@ -25,9 +26,9 @@ private:
     float moveStep;
 
     float type;
-    
+
     float xPosArray[8] = {100.f, 150.f, 200.f, 250.f, 300.f, 350.f, 400.f, 450.f};
-    
+
     float yPosType1 = 100.f;
     float yposType2[2] = {150.f, 200.f};
     float yposType3[2] = {250.f, 300.f};
@@ -35,7 +36,9 @@ private:
     float sortX;
     float sortY;
     bool readyToSort;
-    bool trajectoryFinished; 
+    bool trajectoryFinished;
+
+    int n = 0;
 
     // Window
 
@@ -60,7 +63,7 @@ private:
         this->waveTimerMax = 100.f;
         this->waveTimer = this->waveTimerMax;
 
-        this->moveStep = 0.f;
+        this->moveStep = -1.f;
         this->type = 0.f;
 
         this->sortX = -1.f;
@@ -68,6 +71,7 @@ private:
         this->readyToSort = false;
         this->trajectoryFinished = false;
 
+        
     }
 
     void initWindow()
@@ -137,79 +141,88 @@ public:
 
     void sortEnemy(int i)
     {
-        
+
         this->type = this->enemigos[i]->getType();
-        if(this->type == 1.f)
+        if (this->type == 1.f)
         {
-            if(this->sortX == -1.f && this->sortY == -1.f)
+            if (this->sortX == -1.f && this->sortY == -1.f)
             {
                 this->sortX = this->xPosArray[rand() % 7];
                 this->sortY = this->yPosType1;
             }
-            if(this->enemigos[i]->getXPos() < this->sortX)
+            if (this->enemigos[i]->getXPos() < this->sortX)
             {
                 this->enemigos[i]->moveRight();
             }
-            else if(this->enemigos[i]->getXPos() > this->sortX)
+            else if (this->enemigos[i]->getXPos() > this->sortX)
             {
                 this->enemigos[i]->moveLeft();
             }
-            
-            if(this->enemigos[i]->getYPos() > this->sortY)
+
+            if (this->enemigos[i]->getYPos() > this->sortY)
             {
                 this->enemigos[i]->moveUp();
             }
+            if((abs(this->sortX - this->enemigos[i]->getXPos())) <= 2.5 && (abs(this->sortY - this->enemigos[i]->getYPos())) < 2.5)
+            {
+                this->enemigos[i]->setToXY(this->sortX, this->sortY);
+            }
 
-            //this->enemigos[i]->setToXY(this->xPosArray[rand() % 7], this->yPosType1);
         }
-        else if(this->type == 2.f)
+        else if (this->type == 2.f)
         {
-            if(this->sortX == -1.f && this->sortY == -1.f)
+            if (this->sortX == -1.f && this->sortY == -1.f)
             {
                 this->sortX = this->xPosArray[rand() % 7];
                 this->sortY = this->yposType2[rand() % 1];
             }
-            if(this->enemigos[i]->getXPos() < this->sortX)
+            if (this->enemigos[i]->getXPos() < this->sortX)
             {
                 this->enemigos[i]->moveRight();
             }
-            else if(this->enemigos[i]->getXPos() > this->sortX)
+            else if (this->enemigos[i]->getXPos() > this->sortX)
             {
                 this->enemigos[i]->moveLeft();
             }
-            
-            if(this->enemigos[i]->getYPos() > this->sortY)
+
+            if (this->enemigos[i]->getYPos() > this->sortY)
             {
                 this->enemigos[i]->moveUp();
             }
-            
-            //this->enemigos[i]->setToXY(this->xPosArray[rand() % 7], this->yposType2[rand() % 1]);
+            if((abs(this->sortX - this->enemigos[i]->getXPos())) <= 2.5 && (abs(this->sortY - this->enemigos[i]->getYPos())) < 2.5)
+            {
+                this->enemigos[i]->setToXY(this->sortX, this->sortY);
+            }
+
         }
-        else if(this->type == 3.f)
+        else if (this->type == 3.f)
         {
-            if(this->sortX == -1.f && this->sortY == -1.f)
+            if (this->sortX == -1.f && this->sortY == -1.f)
             {
                 this->sortX = this->xPosArray[rand() % 7];
                 this->sortY = this->yposType3[rand() % 1];
             }
-            if(this->enemigos[i]->getXPos() < this->sortX)
+            if (this->enemigos[i]->getXPos() < this->sortX)
             {
                 this->enemigos[i]->moveRight();
             }
-            else if(this->enemigos[i]->getXPos() > this->sortX)
+            else if (this->enemigos[i]->getXPos() > this->sortX)
             {
                 this->enemigos[i]->moveLeft();
             }
-            
-            if(this->enemigos[i]->getYPos() > this->sortY)
+
+            if (this->enemigos[i]->getYPos() > this->sortY)
             {
                 this->enemigos[i]->moveUp();
             }
-            
-            //this->enemigos[i]->setToXY(this->xPosArray[rand() % 7], this->yposType3[rand() % 1]);
+            if((abs(this->sortX - this->enemigos[i]->getXPos())) <= 2.5 && (abs(this->sortY - this->enemigos[i]->getYPos())) < 2.5)
+            {
+                this->enemigos[i]->setToXY(this->sortX, this->sortY);
+            }
+
         }
 
-        if(this-> sortX == this->enemigos[i]->getXPos() && this->sortY == this->enemigos[i]->getYPos())
+        if (this->sortX == this->enemigos[i]->getXPos() && this->sortY == this->enemigos[i]->getYPos())
         {
             this->sortX = -1.f;
             this->sortY = -1.f;
@@ -217,84 +230,191 @@ public:
         }
     }
 
-    bool trajectoryE1(int i)
+    bool trajectoryE1(int i) // Trayectoria 1 para enemigos.
     {
-        //Primer movimiento
-        if (this->enemigos[i]->getYPos() <= 100.f && this->moveStep == 0.f)
+        //Establece la posición inicial del enemigo antes de aparecer en la pantalla
+        if(this->moveStep == -1.f)
+        {
+            this->enemigos[i]->setToXY(310.f, -40.f);
+            this->moveStep = 0.f;
+        }
+        
+        
+        // Primer movimiento
+        if (this->enemigos[i]->getYPos() < 100.f && this->moveStep == 0.f)
         {
             this->enemigos[i]->moveDown();
+            
         }
-        else if(this->moveStep == 0.f)
+        else if (this->moveStep == 0.f)
         {
             this->moveStep = 1.f;
+            
         }
 
-        //Segundo movimiento
-        if (this->enemigos[i]->getXPos() <= 450.f && this->moveStep == 1.f)
+        // Segundo movimiento
+        if (this->enemigos[i]->getXPos() < 450.f && this->moveStep == 1.f)
         {
             this->enemigos[i]->moveDiagDownRight(1.5, 1.f);
         }
-        else if(this->moveStep == 1.f)
+        else if (this->moveStep == 1.f)
         {
             this->moveStep = 2.f;
         }
 
-        //Tercer movimiento
-        if (this->enemigos[i]->getXPos() <= 500.f && this->moveStep == 2.f)
+        // Tercer movimiento
+        if (this->enemigos[i]->getXPos() < 500.f && this->moveStep == 2.f)
         {
             this->enemigos[i]->moveDiagDownRight(1, 1.5);
         }
-        else if(this->moveStep == 2.f)
+        else if (this->moveStep == 2.f)
         {
             this->moveStep = 3.f;
         }
-        
-        
-        //Cuarto movimiento
-        if(this->enemigos[i]->getYPos() < 380.f && this->moveStep == 3.f)
+
+        // Cuarto movimiento
+        if (this->enemigos[i]->getYPos() < 380.f && this->moveStep == 3.f)
         {
             this->enemigos[i]->moveDown();
         }
-        else if(this->moveStep == 3.f)
+        else if (this->moveStep == 3.f)
         {
             this->moveStep = 4.f;
         }
-        
 
-        //Quinto movimiento
+        // Quinto movimiento
         if (this->enemigos[i]->getXPos() > 390.f && this->moveStep == 4.f)
         {
             this->enemigos[i]->moveDiagDownLeft(1.3, 0.8);
         }
-        else if(this->moveStep == 4.f)
+        else if (this->moveStep == 4.f)
         {
             this->moveStep = 5.f;
         }
 
-        //Sexto movimiento
-        if (this->enemigos[i]->getXPos() > 280.f && this->moveStep == 5.f)
+        // Sexto movimiento
+        if (this->enemigos[i]->getXPos() > 310.f && this->moveStep == 5.f)
         {
             this->enemigos[i]->moveDiagUpLeft(1.3, 0.8);
         }
-        else if(this->moveStep == 5.f)
+        else if (this->moveStep == 5.f)
         {
             this->moveStep = 6.f;
         }
 
-        //Séptimo movimiento
+        // Séptimo movimiento
         if (this->enemigos[i]->getYPos() > 360.f && this->moveStep == 6.f)
         {
             this->enemigos[i]->moveUp();
         }
-        else if(this->moveStep == 6.f)
+        else if (this->moveStep == 6.f)
         {
             this->moveStep = 7.f;
         }
 
-        if(this->moveStep == 7.f)
+        /*
+        Si el enemigo llega a la posición final, se prepara para ser ordenado establece la variable readyToSort en true,
+        se reinicia el contador de pasos de movimiento y se establece la variable trajectoryFinished en true indicando que
+        la trayectoria ha finalizado.
+        */
+        if (this->moveStep == 7.f)
         {
             this->readyToSort = true;
+            this->moveStep = -1.f;
+            this->trajectoryFinished = true;
+        }
+        return readyToSort;
+    }
+
+    bool trajectoryE2(int i) // Trayectoria 2 para enemigos.
+    {
+        //Establece la posición inicial del enemigo antes de aparecer en la pantalla
+        if(this->moveStep == -1.f)
+        {
+            this->enemigos[i]->setToXY(250.f, -40.f);
             this->moveStep = 0.f;
+        }
+        
+        // Primer movimiento
+        if (this->enemigos[i]->getYPos() < 100.f && this->moveStep == 0.f)
+        {
+            this->enemigos[i]->moveDown();
+        }
+        else if (this->moveStep == 0.f)
+        {
+            this->moveStep = 1.f;
+        }
+
+        // Segundo movimiento
+        if (this->enemigos[i]->getXPos() > 150.f && this->moveStep == 1.f)
+        {
+            this->enemigos[i]->moveDiagDownLeft(1.5, 1.f);
+            
+        }
+        else if (this->moveStep == 1.f)
+        {
+            this->moveStep = 2.f;
+        }
+
+        // Tercer movimiento
+        if (this->enemigos[i]->getXPos() > 60.f && this->moveStep == 2.f)
+        {
+            this->enemigos[i]->moveDiagDownLeft(1, 1.5);
+        }
+        else if (this->moveStep == 2.f)
+        {
+            this->moveStep = 3.f;
+        }
+
+        // Cuarto movimiento
+        if (this->enemigos[i]->getYPos() < 380.f && this->moveStep == 3.f)
+        {
+            this->enemigos[i]->moveDown();
+        }
+        else if (this->moveStep == 3.f)
+        {
+            this->moveStep = 4.f;
+        }
+
+        // Quinto movimiento
+        if (this->enemigos[i]->getXPos() < 150.f && this->moveStep == 4.f)
+        {
+            this->enemigos[i]->moveDiagDownRight(1.3, 0.8);
+        }
+        else if (this->moveStep == 4.f)
+        {
+            this->moveStep = 5.f;
+        }
+
+        // Sexto movimiento
+        if (this->enemigos[i]->getXPos() < 250.f && this->moveStep == 5.f)
+        {
+            this->enemigos[i]->moveDiagUpRight(1.3, 0.8);
+        }
+        else if (this->moveStep == 5.f)
+        {
+            this->moveStep = 6.f;
+        }
+
+        // Séptimo movimiento
+        if (this->enemigos[i]->getYPos() > 360.f && this->moveStep == 6.f)
+        {
+            this->enemigos[i]->moveUp();
+        }
+        else if (this->moveStep == 6.f)
+        {
+            this->moveStep = 7.f;
+        }
+
+        /*
+        Si el enemigo llega a la posición final, se prepara para ser ordenado establece la variable readyToSort en true,
+        se reinicia el contador de pasos de movimiento y se establece la variable trajectoryFinished en true indicando que
+        la trayectoria ha finalizado.
+        */
+        if (this->moveStep == 7.f)
+        {
+            this->readyToSort = true;
+            this->moveStep = -1.f;
             this->trajectoryFinished = true;
         }
         return readyToSort;
@@ -302,29 +422,29 @@ public:
 
     void updateEnemigos()
     {
-        //this->spawnTimer += 1.f;
+        // this->spawnTimer += 1.f;
         if (this->spawnTimer >= this->spawnTimerMax)
         {
             this->enemigos.push_back(new Enemigo(240.f, 0.f));
             this->spawnTimer = 0.f;
         }
 
-        if(this->trajectoryFinished == false)
+        if (this->trajectoryFinished == false)
         {
             for (int i = 0; i < this->enemigos.size(); i++)
             {
-                    trajectoryE1(i);
+                trajectoryE2(i);
             }
         }
 
-        if(this->readyToSort)
+        if (this->readyToSort == true)
         {
             for (int i = 0; i < this->enemigos.size(); i++)
             {
                 sortEnemy(i);
             }
         }
-
+       
     }
 
     void update()

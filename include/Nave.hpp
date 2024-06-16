@@ -141,7 +141,7 @@ public:
                 */
                 --counter;
 
-                //std::cout << this->proyectiles.size() << std::endl;
+                // std::cout << this->proyectiles.size() << std::endl;
             }
 
             ++counter;
