@@ -48,7 +48,7 @@ private:
 
     // Objetos dentro del juego
 
-    Nave nave;
+    Nave* nave;
     std::vector<Enemigo *> enemigos;
 
     // Funciones privadas
@@ -86,6 +86,7 @@ private:
     {
         // Inicializando enemigos
         // this->enemigo = new Enemigo(this->window->getSize().x / 2, 0.f);
+        this->nave = new Nave();
     }
 
 public:
@@ -100,6 +101,8 @@ public:
     ~Game()
     {
         delete this->window;
+
+        delete this->nave;
 
         // Eliminar enemigos
         for (auto *i : this->enemigos)
@@ -451,12 +454,12 @@ public:
         for (int i = 0; i < this->enemigos.size(); i++)
         {
             bool enemigoEliminado = false;
-            for (size_t k = 0; k < nave.getProyectilesSize() && !enemigoEliminado; k++)
+            for (size_t k = 0; k < nave->getProyectilesSize() && !enemigoEliminado; k++)
             {
-                if (nave.getProyectilesBounds(k).intersects(this->enemigos[i]->getBounds()))
+                if (nave->getProyectilesBounds(k).intersects(this->enemigos[i]->getBounds()))
                 {
                     this->enemigos.erase(this->enemigos.begin() + i);
-                    nave.deleteProyectil(k);
+                    nave->deleteProyectil(k);
                     enemigoEliminado = true;
                     // std::cout << "Enemigo eliminado" << std::endl;
                     // std::cout << this->enemigos.size() << std::endl;
@@ -471,7 +474,7 @@ public:
         this->pollEvents();
 
         // Actualiza todo lo relacionado con la nave, como su posición, proyectiles, etc.
-        this->nave.update(this->window);
+        this->nave->update(this->window);
 
         // Actualiza todo lo relacionado con los enemigos, como su posición, movimiento, estado, etc.
         this->updateEnemigos();
@@ -492,7 +495,7 @@ public:
 
         // Dibujar elementos en ventana
 
-        this->nave.render(this->window);
+        this->nave->render(this->window);
 
         for (auto *Enemigo : this->enemigos)
         {

@@ -10,8 +10,14 @@
 class Nave
 {
 private:
+    
     // Variables
-    sf::RectangleShape nave;
+    sf::Sprite nave;
+    sf::Texture texture;
+    
+    sf::SoundBuffer buffer;
+    sf::Sound disparo;
+
     double speed;
     float shootCooldown;
     float shootCooldownLimit;
@@ -21,20 +27,39 @@ private:
 public:
     // Funciones
 
-    void innitVariables()
+    void innitTexture()
     {
-        this->speed = 3.f;
-        this->shootCooldownLimit = 60.f;
-        this->shootCooldown = this->shootCooldownLimit;
+        //Cargar la textura de la nave
+        if(!this->texture.loadFromFile("./assets/images/nave.png"))
+        {
+            std::cout << "ERROR::Nave::innitTexture::No se pudo cargar la textura de la nave" << std::endl;
+        }
+        disparo.setBuffer(buffer);
     }
 
-    void innitShape()
+    void innitSprite()
     {
-        /*
-        FUNCION TEMPORAL, SE CAMBIARÁ A UN SPRITE EN EL FUTURO
-        */
-        this->nave.setSize(sf::Vector2f(40.f, 40.f));
-        this->nave.setFillColor(sf::Color::Red);
+        //Asignar la textura a la nave
+        this->nave.setTexture(this->texture);
+
+        //Escalar la sprite de la nave al tamaño deseado
+        this->nave.scale(0.1, 0.1);
+    }
+
+    void innitSound()
+    {
+        //Cargar el sonido para cada disparo de la nave
+        if(!this->buffer.loadFromFile("./assets/music/disparo.wav"))
+        {
+            std::cout << "ERROR::Nave::innitSound::No se pudo cargar el sonido de disparo" << std::endl;
+        }
+    }
+
+    void innitVariables()
+    {
+        this->speed = 2.f;
+        this->shootCooldownLimit = 60.f;
+        this->shootCooldown = this->shootCooldownLimit;
     }
 
     void updateInput()
@@ -65,7 +90,8 @@ public:
         // Disparo (SPACE)
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) && this->canShoot())
         {
-            this->proyectiles.push_back(new Proyectil(0.f, -1.f, nave.getPosition().x + nave.getSize().x / 2, nave.getPosition().y));
+            this->proyectiles.push_back(new Proyectil(0.f, -1.f, -2.f + nave.getPosition().x + nave.getGlobalBounds().width / 2, nave.getPosition().y));
+            this->disparo.play();
         }
     }
 
@@ -213,8 +239,11 @@ public:
     // Constructor y Destructor
     Nave(float posX = -1.f, float posY = -1.f)
     {
+        this->innitTexture();
+        this->innitSprite();
+        this->innitSound();
+
         this->innitVariables();
-        this->innitShape();
 
         if (posX = !-1.f || posY != -1.f)
         {
@@ -222,7 +251,7 @@ public:
         }
         else // Posición por defecto centrado automático en función del tamaño de la nave
         {
-            this->nave.setPosition(300.f - ((this->nave.getSize().x) / 2), 700.f);
+            this->nave.setPosition(300.f - ((this->nave.getGlobalBounds().width) / 2), 700.f);
         }
     }
     ~Nave()
