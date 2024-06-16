@@ -15,12 +15,27 @@ private:
     // Variables
 
     bool endGame;
-    
+
     float waveTimer;
     float waveTimerMax;
 
     float spawnTimer;
     float spawnTimerMax;
+
+    float moveStep;
+
+    float type;
+    
+    float xPosArray[8] = {100.f, 150.f, 200.f, 250.f, 300.f, 350.f, 400.f, 450.f};
+    
+    float yPosType1 = 100.f;
+    float yposType2[2] = {150.f, 200.f};
+    float yposType3[2] = {250.f, 300.f};
+
+    float sortX;
+    float sortY;
+    bool readyToSort;
+    bool trajectoryFinished; 
 
     // Window
 
@@ -39,11 +54,20 @@ private:
     {
         this->window = nullptr;
 
-        this->spawnTimerMax = 50.f;
+        this->spawnTimerMax = 100.f;
         this->spawnTimer = this->spawnTimerMax;
 
         this->waveTimerMax = 100.f;
         this->waveTimer = this->waveTimerMax;
+
+        this->moveStep = 0.f;
+        this->type = 0.f;
+
+        this->sortX = -1.f;
+        this->sortY = -1.f;
+        this->readyToSort = false;
+        this->trajectoryFinished = false;
+
     }
 
     void initWindow()
@@ -52,14 +76,14 @@ private:
         this->videoMode.width = 600;
 
         this->window = new sf::RenderWindow(this->videoMode, "Galaga", sf::Style::Titlebar | sf::Style::Close);
-     
+
         this->window->setFramerateLimit(165);
     }
 
     void initEntities()
     {
-        //Inicializando enemigos
-        //this->enemigo = new Enemigo(this->window->getSize().x / 2, 0.f);
+        // Inicializando enemigos
+        // this->enemigo = new Enemigo(this->window->getSize().x / 2, 0.f);
     }
 
 public:
@@ -76,7 +100,7 @@ public:
         delete this->window;
 
         // Eliminar enemigos
-        for(auto *i : this->enemigos)
+        for (auto *i : this->enemigos)
         {
             delete i;
         }
@@ -111,32 +135,207 @@ public:
         }
     }
 
+    void sortEnemy(int i)
+    {
+        
+        this->type = this->enemigos[i]->getType();
+        if(this->type == 1.f)
+        {
+            if(this->sortX == -1.f && this->sortY == -1.f)
+            {
+                this->sortX = this->xPosArray[rand() % 7];
+                this->sortY = this->yPosType1;
+            }
+            if(this->enemigos[i]->getXPos() < this->sortX)
+            {
+                this->enemigos[i]->moveRight();
+            }
+            else if(this->enemigos[i]->getXPos() > this->sortX)
+            {
+                this->enemigos[i]->moveLeft();
+            }
+            
+            if(this->enemigos[i]->getYPos() > this->sortY)
+            {
+                this->enemigos[i]->moveUp();
+            }
+
+            //this->enemigos[i]->setToXY(this->xPosArray[rand() % 7], this->yPosType1);
+        }
+        else if(this->type == 2.f)
+        {
+            if(this->sortX == -1.f && this->sortY == -1.f)
+            {
+                this->sortX = this->xPosArray[rand() % 7];
+                this->sortY = this->yposType2[rand() % 1];
+            }
+            if(this->enemigos[i]->getXPos() < this->sortX)
+            {
+                this->enemigos[i]->moveRight();
+            }
+            else if(this->enemigos[i]->getXPos() > this->sortX)
+            {
+                this->enemigos[i]->moveLeft();
+            }
+            
+            if(this->enemigos[i]->getYPos() > this->sortY)
+            {
+                this->enemigos[i]->moveUp();
+            }
+            
+            //this->enemigos[i]->setToXY(this->xPosArray[rand() % 7], this->yposType2[rand() % 1]);
+        }
+        else if(this->type == 3.f)
+        {
+            if(this->sortX == -1.f && this->sortY == -1.f)
+            {
+                this->sortX = this->xPosArray[rand() % 7];
+                this->sortY = this->yposType3[rand() % 1];
+            }
+            if(this->enemigos[i]->getXPos() < this->sortX)
+            {
+                this->enemigos[i]->moveRight();
+            }
+            else if(this->enemigos[i]->getXPos() > this->sortX)
+            {
+                this->enemigos[i]->moveLeft();
+            }
+            
+            if(this->enemigos[i]->getYPos() > this->sortY)
+            {
+                this->enemigos[i]->moveUp();
+            }
+            
+            //this->enemigos[i]->setToXY(this->xPosArray[rand() % 7], this->yposType3[rand() % 1]);
+        }
+
+        if(this-> sortX == this->enemigos[i]->getXPos() && this->sortY == this->enemigos[i]->getYPos())
+        {
+            this->sortX = -1.f;
+            this->sortY = -1.f;
+            this->readyToSort = false;
+        }
+    }
+
+    bool trajectoryE1(int i)
+    {
+        //Primer movimiento
+        if (this->enemigos[i]->getYPos() <= 100.f && this->moveStep == 0.f)
+        {
+            this->enemigos[i]->moveDown();
+        }
+        else if(this->moveStep == 0.f)
+        {
+            this->moveStep = 1.f;
+        }
+
+        //Segundo movimiento
+        if (this->enemigos[i]->getXPos() <= 450.f && this->moveStep == 1.f)
+        {
+            this->enemigos[i]->moveDiagDownRight(1.5, 1.f);
+        }
+        else if(this->moveStep == 1.f)
+        {
+            this->moveStep = 2.f;
+        }
+
+        //Tercer movimiento
+        if (this->enemigos[i]->getXPos() <= 500.f && this->moveStep == 2.f)
+        {
+            this->enemigos[i]->moveDiagDownRight(1, 1.5);
+        }
+        else if(this->moveStep == 2.f)
+        {
+            this->moveStep = 3.f;
+        }
+        
+        
+        //Cuarto movimiento
+        if(this->enemigos[i]->getYPos() < 380.f && this->moveStep == 3.f)
+        {
+            this->enemigos[i]->moveDown();
+        }
+        else if(this->moveStep == 3.f)
+        {
+            this->moveStep = 4.f;
+        }
+        
+
+        //Quinto movimiento
+        if (this->enemigos[i]->getXPos() > 390.f && this->moveStep == 4.f)
+        {
+            this->enemigos[i]->moveDiagDownLeft(1.3, 0.8);
+        }
+        else if(this->moveStep == 4.f)
+        {
+            this->moveStep = 5.f;
+        }
+
+        //Sexto movimiento
+        if (this->enemigos[i]->getXPos() > 280.f && this->moveStep == 5.f)
+        {
+            this->enemigos[i]->moveDiagUpLeft(1.3, 0.8);
+        }
+        else if(this->moveStep == 5.f)
+        {
+            this->moveStep = 6.f;
+        }
+
+        //Séptimo movimiento
+        if (this->enemigos[i]->getYPos() > 360.f && this->moveStep == 6.f)
+        {
+            this->enemigos[i]->moveUp();
+        }
+        else if(this->moveStep == 6.f)
+        {
+            this->moveStep = 7.f;
+        }
+
+        if(this->moveStep == 7.f)
+        {
+            this->readyToSort = true;
+            this->moveStep = 0.f;
+            this->trajectoryFinished = true;
+        }
+        return readyToSort;
+    }
+
     void updateEnemigos()
     {
         //this->spawnTimer += 1.f;
         if (this->spawnTimer >= this->spawnTimerMax)
         {
-            this->enemigos.push_back(new Enemigo(320.f, 0.f));
+            this->enemigos.push_back(new Enemigo(240.f, 0.f));
             this->spawnTimer = 0.f;
         }
-        
-        
-        for(int i = 0 ; i < this->enemigos.size(); i++)
+
+        if(this->trajectoryFinished == false)
         {
-            this->enemigos[i]->update();
+            for (int i = 0; i < this->enemigos.size(); i++)
+            {
+                    trajectoryE1(i);
+            }
         }
-        
+
+        if(this->readyToSort)
+        {
+            for (int i = 0; i < this->enemigos.size(); i++)
+            {
+                sortEnemy(i);
+            }
+        }
+
     }
 
     void update()
     {
-        //Actualiza los eventos de la ventana
+        // Actualiza los eventos de la ventana
         this->pollEvents();
 
-        //Actualiza todo lo relacionado con la nave, como su posición, proyectiles, etc.
+        // Actualiza todo lo relacionado con la nave, como su posición, proyectiles, etc.
         this->nave.update(this->window);
 
-        //Actualiza todo lo relacionado con los enemigos, como su posición, movimiento, estado, etc.
+        // Actualiza todo lo relacionado con los enemigos, como su posición, movimiento, estado, etc.
         this->updateEnemigos();
     }
 
@@ -157,7 +356,7 @@ public:
 
         this->nave.render(this->window);
 
-        for(auto *Enemigo : this->enemigos)
+        for (auto *Enemigo : this->enemigos)
         {
             Enemigo->render(this->window);
         }
