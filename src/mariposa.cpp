@@ -10,7 +10,7 @@ int main()
     window.setFramerateLimit(60); 
 
     sf::Texture textureM;
-    if (!textureM.loadFromFile("assets/Mariposa.png"))
+    if (!textureM.loadFromFile("./assets/images/mariposa.png"))
     {
         return -1;
     }

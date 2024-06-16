@@ -10,7 +10,7 @@ int main()
     window.setFramerateLimit(60); 
 
     sf::Texture textureJ;
-    if (!textureJ.loadFromFile("assets/Jefe.png"))
+    if (!textureJ.loadFromFile("./assets/images/jefe.png"))
     {
         return -1;
     }
