@@ -10,22 +10,20 @@
 class Enemigo
 {
 private:
-    //Variables
+    // Variables
 
 protected:
-    //Variables
+    // Variables
     sf::RectangleShape enemigo;
     double speed;
     int tipo;
 
 public:
-    
-    //Funciones
+    // Funciones
     void innitVariables()
     {
         this->speed = 2.5;
-        this->tipo = rand() % 3 + 1; //Genera un tipo de enemigo aleatorio (1, 2 o 3)
-
+        this->tipo = rand() % 3 + 1; // Genera un tipo de enemigo aleatorio (1, 2 o 3)
     }
 
     void innitShape()
@@ -34,20 +32,19 @@ public:
         FUNCION TEMPORAL, SE CAMBIARÁ A UN SPRITE EN EL FUTURO
         */
         this->enemigo.setSize(sf::Vector2f(40.f, 40.f));
-        
-        switch(this->tipo)
+
+        switch (this->tipo)
         {
-            case 1:
-                this->enemigo.setFillColor(sf::Color::Magenta); 
-                break;
-            case 2:
-                this->enemigo.setFillColor(sf::Color::Blue);
-                break;
-            case 3:
-                this->enemigo.setFillColor(sf::Color::Yellow);
-                break;
+        case 1:
+            this->enemigo.setFillColor(sf::Color::Magenta);
+            break;
+        case 2:
+            this->enemigo.setFillColor(sf::Color::Blue);
+            break;
+        case 3:
+            this->enemigo.setFillColor(sf::Color::Yellow);
+            break;
         }
-        
     }
 
     void setToXY(float posX, float posY)
@@ -77,27 +74,26 @@ public:
 
     void moveDiagDownRight(float factorX = 1.f, float factorY = 1.f)
     {
-        this->enemigo.move(0.707*this->speed*factorX, 0.707*this->speed*factorY);
+        this->enemigo.move(0.707 * this->speed * factorX, 0.707 * this->speed * factorY);
     }
 
     void moveDiagDownLeft(float factorX = 1.f, float factorY = 1.f)
     {
-        this->enemigo.move(-0.707*this->speed*factorX, 0.707*this->speed*factorY);
+        this->enemigo.move(-0.707 * this->speed * factorX, 0.707 * this->speed * factorY);
     }
 
     void moveDiagUpRight(float factorX = 1.f, float factorY = 1.f)
     {
-        this->enemigo.move(0.707*this->speed*factorX, -0.707*this->speed*factorY);
+        this->enemigo.move(0.707 * this->speed * factorX, -0.707 * this->speed * factorY);
     }
 
     void moveDiagUpLeft(float factorX = 1.f, float factorY = 1.f)
     {
-        this->enemigo.move(-0.707*this->speed*factorX, -0.707*this->speed*factorY);
+        this->enemigo.move(-0.707 * this->speed * factorX, -0.707 * this->speed * factorY);
     }
 
     void update()
     {
-        
     }
 
     void render(sf::RenderTarget *target)
@@ -105,7 +101,7 @@ public:
         target->draw(this->enemigo);
     }
 
-    //Accesores
+    // Accesores
     float getXPos()
     {
         return this->enemigo.getPosition().x;
@@ -121,7 +117,7 @@ public:
         return this->tipo;
     }
 
-    //Constructor y Destructor
+    // Constructor y Destructor
     Enemigo(float posX = 0.f, float posY = 0.f)
     {
         this->innitVariables();
