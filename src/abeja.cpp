@@ -10,7 +10,7 @@ int main()
     window.setFramerateLimit(60); 
 
     sf::Texture textureA;
-    if (!textureA.loadFromFile("assets/Abeja.png"))
+    if (!textureA.loadFromFile("./assets/images/abeja.png"))
     {
         return -1;
     }

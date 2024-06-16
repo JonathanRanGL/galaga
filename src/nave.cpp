@@ -11,7 +11,7 @@ int main()
 
     // Se carga la textura de la nave.
     sf::Texture textureN;
-    if (!textureN.loadFromFile("assets/Nave.png"))
+    if (!textureN.loadFromFile("./assets/images/nave.png"))
     {
         return -1;//En caso de que no se pueda cargar la textura, se cierra el programa.
     }
