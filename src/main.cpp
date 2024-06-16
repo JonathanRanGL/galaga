@@ -1,8 +1,16 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Window.hpp>
+#include <SFML/System.hpp>
+#include <SFML/Audio.hpp>
+
+#include <time.h>
+
 #include <Game.hpp>
 
 int main()
 {
+    srand(time(static_cast<unsigned>(0)));
+    
     Game game;
 
     while (game.running()) // Revisa constantemente si la ventana sigue abierta

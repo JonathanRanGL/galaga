@@ -7,7 +7,6 @@
 
 #include <Proyectil.hpp>
 
-
 class Nave
 {
 private:
@@ -16,11 +15,10 @@ private:
     double speed;
     float shootCooldown;
     float shootCooldownLimit;
-    
-    std::vector<Proyectil*> proyectiles; //Vector que almacena los punteros hacia los proyectiles
+
+    std::vector<Proyectil *> proyectiles; // Vector que almacena los punteros hacia los proyectiles
 
 public:
-    
     // Funciones
 
     void innitVariables()
@@ -28,7 +26,6 @@ public:
         this->speed = 3.f;
         this->shootCooldownLimit = 60.f;
         this->shootCooldown = this->shootCooldownLimit;
-        
     }
 
     void innitShape()
@@ -66,25 +63,28 @@ public:
         }
 
         // Disparo (SPACE)
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) && this->canShoot())
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) && this->canShoot())
         {
-            this->proyectiles.push_back(new Proyectil(0.f, -1.f, nave.getPosition().x + nave.getSize().x/2, nave.getPosition().y));
+            this->proyectiles.push_back(new Proyectil(0.f, -1.f, nave.getPosition().x + nave.getSize().x / 2, nave.getPosition().y));
         }
     }
 
     void updateBoundCollsion(const sf::RenderTarget *target)
     {
-        
-        
+        /*
+        Esta es una función que detecta la colisión de la nave con los bordes de la ventana,
+        si la nave colisiona con alguno de los bordes, esta se detiene y no puede seguir avanzando.
+        */
+
         sf::Vector2 posNave = this->nave.getPosition();
 
-        //Izquierda
-        if(this->nave.getGlobalBounds().left <= 0.f)
+        // Izquierda
+        if (this->nave.getGlobalBounds().left <= 0.f)
         {
             this->nave.setPosition(0.f, posNave.y);
         }
-        //Derecha
-        else if(this->nave.getGlobalBounds().left + this->nave.getGlobalBounds().width >= target->getSize().x)
+        // Derecha
+        else if (this->nave.getGlobalBounds().left + this->nave.getGlobalBounds().width >= target->getSize().x)
         {
             this->nave.setPosition(target->getSize().x - this->nave.getGlobalBounds().width, posNave.y);
         }
@@ -92,6 +92,9 @@ public:
 
     void updateCooldown()
     {
+        /*
+        Esta función se encarga de actualizar el contador utilizado para el espacio de tiempo entre desparos de la nave.
+        */
         if (this->shootCooldown < this->shootCooldownLimit)
         {
             this->shootCooldown += 1.f;
@@ -100,7 +103,11 @@ public:
 
     const bool canShoot()
     {
-        if(this->shootCooldown >= this->shootCooldownLimit)
+        /*
+        Esta función se encarga de verificar si el contador que establece el tiempo entre cada disparo de la nave ha llegado
+        a su límite, si es así, reinicia el contador y retorna verdadero, de lo contrario, retorna falso.
+        */
+        if (this->shootCooldown >= this->shootCooldownLimit)
         {
             this->shootCooldown = 0.f;
             return true;
@@ -110,9 +117,9 @@ public:
 
     void updateProyectiles()
     {
-        
+
         unsigned counter = 0;
-        for(auto *proyectil : this->proyectiles)
+        for (auto *proyectil : this->proyectiles)
         {
             proyectil->update();
 
@@ -120,21 +127,21 @@ public:
             Esta sección de esta función se encarga de eliminar los proyectiles que salgan
             de la pantalla, para ello se revisa el borde inferior del proyectil, si este
             se encuentra fuera de la ventana, se elimina el proyectil en la posición del vector
-            que le corresponde empezando desde el inicio del arreglo e incrementando con ayuda 
+            que le corresponde empezando desde el inicio del arreglo e incrementando con ayuda
             de un contador cada que se actualiza un proyectil.
             */
-            if(proyectil->getBounds().top + proyectil->getBounds().height <= 0.f)
+            if (proyectil->getBounds().top + proyectil->getBounds().height <= 0.f)
             {
                 delete this->proyectiles.at(counter);
                 this->proyectiles.erase(this->proyectiles.begin() + counter);
-                
+
                 /*
                 Cuando borre un proyectil se reduce también el tamaño del vector
                 por lo que se reduce el contador para que no se salte un proyectil.
                 */
-                --counter; 
+                --counter;
 
-                std::cout << this->proyectiles.size() << std::endl;
+                //std::cout << this->proyectiles.size() << std::endl;
             }
 
             ++counter;
@@ -165,39 +172,33 @@ public:
         RenderTarget.
         */
 
-       for(auto *proyectil : this->proyectiles)
+        for (auto *proyectil : this->proyectiles)
         {
             proyectil->render(target);
         }
-           
-        
 
         target->draw(this->nave);
     }
-        
-
-        
 
     // Constructor y Destructor
     Nave(float posX = -1.f, float posY = -1.f)
     {
         this->innitVariables();
         this->innitShape();
-        
-        if(posX =! -1.f || posY != -1.f)
+
+        if (posX = !-1.f || posY != -1.f)
         {
             this->nave.setPosition(posX, posY);
         }
-        else //Posición por defecto centrado automático en función del tamaño de la nave
+        else // Posición por defecto centrado automático en función del tamaño de la nave
         {
-            this->nave.setPosition(300.f-((this->nave.getSize().x)/2), 700.f);
+            this->nave.setPosition(300.f - ((this->nave.getSize().x) / 2), 700.f);
         }
-        
     }
     ~Nave()
     {
-        
-        //Eliminación de los proyectiles
+
+        // Eliminación de los proyectiles
         for (auto *i : this->proyectiles)
         {
             delete i;
