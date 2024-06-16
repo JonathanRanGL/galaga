@@ -38,7 +38,7 @@ public:
         target->draw(this->proyectil);
     }
 
-    //Accesores
+    // Accesores
 
     const sf::FloatRect getBounds() const
     {

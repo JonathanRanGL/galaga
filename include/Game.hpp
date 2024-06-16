@@ -70,8 +70,6 @@ private:
         this->sortY = -1.f;
         this->readyToSort = false;
         this->trajectoryFinished = false;
-
-        
     }
 
     void initWindow()
@@ -141,7 +139,13 @@ public:
 
     void sortEnemy(int i)
     {
-
+        /*
+        Esta función se encarga de ordenar a los enemigos en la pantalla, dependiendo de su tipo, se les asigna una posición
+        en X y Y predefinidas según una matriz de posiciones, esto se ejecuta una vez que el enemigo haya terminado de recorrer
+        la trayectoria mediante la que aparece en la pantalla.
+        La posición que se le asigna en Y depende de su tipo, mientras que la posición en X es aleatoria para agregar un poco de
+        variabilidad en la posición de los enemigos cada vez que se juegue una partida.
+        */
         this->type = this->enemigos[i]->getType();
         if (this->type == 1.f)
         {
@@ -163,11 +167,10 @@ public:
             {
                 this->enemigos[i]->moveUp();
             }
-            if((abs(this->sortX - this->enemigos[i]->getXPos())) <= 2.5 && (abs(this->sortY - this->enemigos[i]->getYPos())) < 2.5)
+            if ((abs(this->sortX - this->enemigos[i]->getXPos())) <= 2.5 && (abs(this->sortY - this->enemigos[i]->getYPos())) < 2.5)
             {
                 this->enemigos[i]->setToXY(this->sortX, this->sortY);
             }
-
         }
         else if (this->type == 2.f)
         {
@@ -189,11 +192,10 @@ public:
             {
                 this->enemigos[i]->moveUp();
             }
-            if((abs(this->sortX - this->enemigos[i]->getXPos())) <= 2.5 && (abs(this->sortY - this->enemigos[i]->getYPos())) < 2.5)
+            if ((abs(this->sortX - this->enemigos[i]->getXPos())) <= 2.5 && (abs(this->sortY - this->enemigos[i]->getYPos())) < 2.5)
             {
                 this->enemigos[i]->setToXY(this->sortX, this->sortY);
             }
-
         }
         else if (this->type == 3.f)
         {
@@ -215,11 +217,10 @@ public:
             {
                 this->enemigos[i]->moveUp();
             }
-            if((abs(this->sortX - this->enemigos[i]->getXPos())) <= 2.5 && (abs(this->sortY - this->enemigos[i]->getYPos())) < 2.5)
+            if ((abs(this->sortX - this->enemigos[i]->getXPos())) <= 2.5 && (abs(this->sortY - this->enemigos[i]->getYPos())) < 2.5)
             {
                 this->enemigos[i]->setToXY(this->sortX, this->sortY);
             }
-
         }
 
         if (this->sortX == this->enemigos[i]->getXPos() && this->sortY == this->enemigos[i]->getYPos())
@@ -232,24 +233,21 @@ public:
 
     bool trajectoryE1(int i) // Trayectoria 1 para enemigos.
     {
-        //Establece la posición inicial del enemigo antes de aparecer en la pantalla
-        if(this->moveStep == -1.f)
+        // Establece la posición inicial del enemigo antes de aparecer en la pantalla
+        if (this->moveStep == -1.f)
         {
             this->enemigos[i]->setToXY(310.f, -40.f);
             this->moveStep = 0.f;
         }
-        
-        
+
         // Primer movimiento
         if (this->enemigos[i]->getYPos() < 100.f && this->moveStep == 0.f)
         {
             this->enemigos[i]->moveDown();
-            
         }
         else if (this->moveStep == 0.f)
         {
             this->moveStep = 1.f;
-            
         }
 
         // Segundo movimiento
@@ -328,13 +326,13 @@ public:
 
     bool trajectoryE2(int i) // Trayectoria 2 para enemigos.
     {
-        //Establece la posición inicial del enemigo antes de aparecer en la pantalla
-        if(this->moveStep == -1.f)
+        // Establece la posición inicial del enemigo antes de aparecer en la pantalla
+        if (this->moveStep == -1.f)
         {
             this->enemigos[i]->setToXY(250.f, -40.f);
             this->moveStep = 0.f;
         }
-        
+
         // Primer movimiento
         if (this->enemigos[i]->getYPos() < 100.f && this->moveStep == 0.f)
         {
@@ -349,7 +347,6 @@ public:
         if (this->enemigos[i]->getXPos() > 150.f && this->moveStep == 1.f)
         {
             this->enemigos[i]->moveDiagDownLeft(1.5, 1.f);
-            
         }
         else if (this->moveStep == 1.f)
         {
@@ -422,7 +419,7 @@ public:
 
     void updateEnemigos()
     {
-        //this->spawnTimer += 1.f;
+        // this->spawnTimer += 1.f;
         if (this->spawnTimer >= this->spawnTimerMax)
         {
             this->enemigos.push_back(new Enemigo(240.f, 0.f));
@@ -445,24 +442,27 @@ public:
             }
         }
 
-        for (int i = 0; i < this->enemigos.size() ; i++)
-        {   
+        /*
+        Esta sección de la función se encarga de detectar la colisión de los proyectiles de la nave con los enemigos,
+        en caso de haber un impacto, es decir, sus hitboxes se intersectan, se elimina el enemigo y el proyectil de
+        su correspondiente vector.
+        */
+
+        for (int i = 0; i < this->enemigos.size(); i++)
+        {
             bool enemigoEliminado = false;
-            for(size_t k = 0; k < nave.getProyectilesSize() && !enemigoEliminado; k++)
+            for (size_t k = 0; k < nave.getProyectilesSize() && !enemigoEliminado; k++)
             {
-                if(nave.getProyectilesBounds(k).intersects(this->enemigos[i]->getBounds()))
+                if (nave.getProyectilesBounds(k).intersects(this->enemigos[i]->getBounds()))
                 {
                     this->enemigos.erase(this->enemigos.begin() + i);
                     nave.deleteProyectil(k);
                     enemigoEliminado = true;
-                    //std::cout << "Enemigo eliminado" << std::endl;
-                    std::cout << this->enemigos.size() << std::endl;
+                    // std::cout << "Enemigo eliminado" << std::endl;
+                    // std::cout << this->enemigos.size() << std::endl;
                 }
-            
             }
         }
-        
-       
     }
 
     void update()

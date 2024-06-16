@@ -47,8 +47,20 @@ public:
         }
     }
 
+    // ------------------------------------------------------------------------------------------------------------------------------------
+
+    /*
+    Las siguientes funciones pareciera que no tienen mucho sentido, ya que replican la funcionalidad de funciones originales de
+    la librería SFML, sin embargo, su utilidad radica en que permiten llamar a estas funciones por fuera de la clase enemigo,
+    esto permite no solo agilizar la actualización de la posición de un enemigo cualquira, si no que, obviamente, estas pueden
+    ser llamadas por fuera de la clase enemigo, la que es su verdadera utilidad.
+    */
+
     void setToXY(float posX, float posY)
     {
+        /*
+        Esta función permite establecer una posición en X y Y para el enemigo por fuera de la clase enemigo.
+        */
         this->enemigo.setPosition(posX, posY);
     }
 
@@ -72,6 +84,16 @@ public:
         this->enemigo.move(this->speed, 0.f);
     }
 
+    /*
+    A las funciones de movimiento diagonal se les agregó dos productos a la velocidad, el primero siendo una constante de valor 0.707,
+    la razón de esto es que la velocidad diagonal es mayor a la velocidad horizontal o vertical, esto se puede demostrar por medio de
+    geometría, por lo que para mantener la velocidad diagnonal en un valor cercano a 1 se multiplica por 0.707 (que es el euivalente
+    a el inverso de la raíz de 2).
+    El segundo producto es un factor de altera el valor de la velocidad, esto permite que el vector de velocidad para X o para Y sea
+    diferente, permitiendo que el movimient diagnonal del enemigo pueda tomar diferentes ángulos no únicamente 45°, es decir, que si
+    se el factor de X es 2 y el factor de Y es 1, el enemigo se moverá 2 veces más en X que en Y, lo que cambia el ángulo de movimiento.
+    */
+
     void moveDiagDownRight(float factorX = 1.f, float factorY = 1.f)
     {
         this->enemigo.move(0.707 * this->speed * factorX, 0.707 * this->speed * factorY);
@@ -92,6 +114,8 @@ public:
         this->enemigo.move(-0.707 * this->speed * factorX, -0.707 * this->speed * factorY);
     }
 
+    // ------------------------------------------------------------------------------------------------------------------------------------
+
     void update()
     {
     }
@@ -104,21 +128,34 @@ public:
     // Accesores
     float getXPos()
     {
+        /*
+        Esta función permite obtener la posición en X del enemigo por fuera de la clase nave.
+        */
         return this->enemigo.getPosition().x;
     }
 
     float getYPos()
     {
+        /*
+        Esta función permite obtener la posición en Y del enemigo por fuera de la clase nave.
+        */
         return this->enemigo.getPosition().y;
     }
 
     int getType()
     {
+        /*
+        Esta función permite obtener el tipo de enemigo por fuera de la clase nave.
+        */
         return this->tipo;
     }
 
     const sf::FloatRect getBounds() const
     {
+        /*
+        Esta función permite obtener los límites en las dimensiones (por así decirlo, el hitbox)
+        del enemigo, su utilidad radica en que puede ser llamada por fuera de la clase Enemigo.
+        */
         return this->enemigo.getGlobalBounds();
     }
 

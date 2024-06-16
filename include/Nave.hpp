@@ -19,7 +19,6 @@ private:
     std::vector<Proyectil *> proyectiles; // Vector que almacena los punteros hacia los proyectiles
 
 public:
-    
     // Funciones
 
     void innitVariables()
@@ -151,6 +150,10 @@ public:
 
     void deleteProyectil(int index)
     {
+        /*
+        Esta función permite eliminar un proyectil del vector de proyectiles en una posición en específico,
+        la importancia de la función radica en que puede ser llamada desde fuera de la clase Nave.
+        */
         delete this->proyectiles.at(index);
         this->proyectiles.erase(this->proyectiles.begin() + index);
     }
@@ -190,14 +193,22 @@ public:
     // Accesores
     int getProyectilesSize()
     {
+        /*
+        Esta función permite obtener el tamaño del vector de proyectiles, su utilidad radica en
+        que puede ser llamada desde fuera de la clase Nave.
+        */
         return this->proyectiles.size();
     }
 
     const sf::FloatRect getProyectilesBounds(int i)
     {
+        /*
+        Esta función permite obtener los límites en las dimensiones (por así decirlo, el hitbox)
+        de un proyectil una posición en especificada en el vector de proyectiles, su utilidad radica
+        en que puede ser llamada por fuera de la clase Nave.
+        */
         return this->proyectiles.at(i)->getBounds();
     }
-    
 
     // Constructor y Destructor
     Nave(float posX = -1.f, float posY = -1.f)
