@@ -422,7 +422,7 @@ public:
 
     void updateEnemigos()
     {
-        // this->spawnTimer += 1.f;
+        //this->spawnTimer += 1.f;
         if (this->spawnTimer >= this->spawnTimerMax)
         {
             this->enemigos.push_back(new Enemigo(240.f, 0.f));
@@ -444,6 +444,24 @@ public:
                 sortEnemy(i);
             }
         }
+
+        for (int i = 0; i < this->enemigos.size() ; i++)
+        {   
+            bool enemigoEliminado = false;
+            for(size_t k = 0; k < nave.getProyectilesSize() && !enemigoEliminado; k++)
+            {
+                if(nave.getProyectilesBounds(k).intersects(this->enemigos[i]->getBounds()))
+                {
+                    this->enemigos.erase(this->enemigos.begin() + i);
+                    nave.deleteProyectil(k);
+                    enemigoEliminado = true;
+                    //std::cout << "Enemigo eliminado" << std::endl;
+                    std::cout << this->enemigos.size() << std::endl;
+                }
+            
+            }
+        }
+        
        
     }
 

@@ -27,11 +27,6 @@ public:
         this->proyectil.setFillColor(sf::Color::White);
     }
 
-    const sf::FloatRect getBounds() const
-    {
-        return this->proyectil.getGlobalBounds();
-    }
-
     void update()
     {
 
@@ -41,6 +36,13 @@ public:
     void render(sf::RenderTarget *target)
     {
         target->draw(this->proyectil);
+    }
+
+    //Accesores
+
+    const sf::FloatRect getBounds() const
+    {
+        return this->proyectil.getGlobalBounds();
     }
 
     Proyectil(float dirX, float dirY, float posX, float posY)

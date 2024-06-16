@@ -19,6 +19,7 @@ private:
     std::vector<Proyectil *> proyectiles; // Vector que almacena los punteros hacia los proyectiles
 
 public:
+    
     // Funciones
 
     void innitVariables()
@@ -148,6 +149,12 @@ public:
         }
     }
 
+    void deleteProyectil(int index)
+    {
+        delete this->proyectiles.at(index);
+        this->proyectiles.erase(this->proyectiles.begin() + index);
+    }
+
     void update(const sf::RenderTarget *target)
     {
         // Actualización de la entrada del usuario (teclado)
@@ -179,6 +186,18 @@ public:
 
         target->draw(this->nave);
     }
+
+    // Accesores
+    int getProyectilesSize()
+    {
+        return this->proyectiles.size();
+    }
+
+    const sf::FloatRect getProyectilesBounds(int i)
+    {
+        return this->proyectiles.at(i)->getBounds();
+    }
+    
 
     // Constructor y Destructor
     Nave(float posX = -1.f, float posY = -1.f)
