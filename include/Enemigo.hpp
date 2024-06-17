@@ -22,7 +22,7 @@ public:
     // Funciones
     void innitVariables()
     {
-        this->speed = 2.5;
+        this->speed = 4.5;
         this->tipo = rand() % 3 + 1; // Genera un tipo de enemigo aleatorio (1, 2 o 3)
     }
 
@@ -126,6 +126,14 @@ public:
     }
 
     // Accesores
+    float getSpeed()
+    {
+        /*
+        Esta función permite obtener la velocidad del enemigo por fuera de la clase nave.
+        */
+        return this->speed;
+    }
+    
     float getXPos()
     {
         /*

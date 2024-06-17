@@ -17,14 +17,11 @@ private:
 
     bool endGame;
 
-    float waveTimer;
-    float waveTimerMax;
-
-    float spawnTimer;
-    float spawnTimerMax;
+    bool firstEnemy;
 
     float moveStep;
-
+    bool isSorted;
+    
     float type;
 
     float xPosArray[8] = {100.f, 150.f, 200.f, 250.f, 300.f, 350.f, 400.f, 450.f};
@@ -33,12 +30,31 @@ private:
     float yposType2[2] = {150.f, 200.f};
     float yposType3[2] = {250.f, 300.f};
 
+    bool slotStateType1[8] = {false, false, false, false, false, false, false, false};
+    
+    bool slotStateType2R1[8] = {false, false, false, false, false, false, false, false};
+    bool slotStateType2R2[8] = {false, false, false, false, false, false, false, false};
+
+    bool slotStateType3R1[8] = {false, false, false, false, false, false, false, false};
+    bool slotStateType3R2[8] = {false, false, false, false, false, false, false, false};
+
+    bool type1Full;
+    bool type2Full;
+    bool type3Full;
+
+    bool slotReseted = false;
+
     float sortX;
     float sortY;
-    bool readyToSort;
-    bool trajectoryFinished;
 
-    int n = 0;
+    int randAX;
+    int randAY;
+    bool readyToSort;
+    int trajectoryPicked;
+
+    int j;
+
+    int yDelete;
 
     // Window
 
@@ -49,7 +65,22 @@ private:
     // Objetos dentro del juego
 
     Nave* nave;
+
+    /*
+    Se crea un vector de enemigos encargado de almacenar los datos de todos los enemigos activos.
+    Si el enemigo muere, se elimina del vector liberando la memporia que ocupaba, al igual que se
+    hace con el proyectil de la nave que lo impactó y todos aquellos proyectiles que salen de la 
+    ventana.
+    */
     std::vector<Enemigo *> enemigos;
+    
+    /*
+    Este vector se encarga de almacenar un 1 o un 0 que indicará si el enemigo ha sido ordenado o no,
+    para cada enemigo activo en la pantalla, hay un valor dentro de este vector
+    */
+    std::vector<int> enemySorted; 
+
+
 
     // Funciones privadas
 
@@ -57,19 +88,27 @@ private:
     {
         this->window = nullptr;
 
-        this->spawnTimerMax = 100.f;
-        this->spawnTimer = this->spawnTimerMax;
+        this->firstEnemy = true;
 
-        this->waveTimerMax = 100.f;
-        this->waveTimer = this->waveTimerMax;
+        this->isSorted = false;
 
         this->moveStep = -1.f;
         this->type = 0.f;
 
         this->sortX = -1.f;
         this->sortY = -1.f;
+        this->randAX = 0;
+        this->randAY = 0;
         this->readyToSort = false;
-        this->trajectoryFinished = false;
+
+        this->yDelete = 0;
+
+        this->type1Full = false;
+        this->type2Full = false;
+        this->type3Full = false;
+
+        this->trajectoryPicked = rand() % 2;
+
     }
 
     void initWindow()
@@ -84,8 +123,6 @@ private:
 
     void initEntities()
     {
-        // Inicializando enemigos
-        // this->enemigo = new Enemigo(this->window->getSize().x / 2, 0.f);
         this->nave = new Nave();
     }
 
@@ -119,6 +156,57 @@ public:
     }
 
     // Funciones
+
+    bool isType1Full()
+    {
+        for(int i = 0 ; i < 8 ; i++)
+        {
+            if(this->slotStateType1[i] == false)
+            {
+                this->type1Full = false;
+                break;
+            }
+            else
+            {
+                this->type1Full = true;
+            }
+        }
+        return this->type1Full;
+    }
+
+    bool isType2Full()
+    {
+        for(int i = 0 ; i < 8 ; i++)
+        {
+            if(this->slotStateType2R1[i] == false || this->slotStateType2R2[i] == false)
+            {
+                this->type2Full = false;
+                break;
+            }
+            else
+            {
+                this->type2Full = true;
+            }
+        }
+        return this->type2Full;
+    }
+
+    bool isType3Full()
+    {
+        for(int i = 0 ; i < 8 ; i++)
+        {
+            if(this->slotStateType3R1[i] == false || this->slotStateType3R2[i] == false)
+            {
+                this->type3Full = false;
+                break;
+            }
+            else
+            {
+                this->type3Full = true;
+            }
+        }
+        return this->type3Full;
+    }
 
     void pollEvents()
     {
@@ -154,8 +242,23 @@ public:
         {
             if (this->sortX == -1.f && this->sortY == -1.f)
             {
-                this->sortX = this->xPosArray[rand() % 7];
+                randAX = rand() % 8;
+                randAY = 0;
+                
+                this->sortX = this->xPosArray[randAX];
                 this->sortY = this->yPosType1;
+
+                if(this->slotStateType1[randAX] == true)
+                {
+                    randAX = rand() % 8;
+                    this->sortX = -1.f;
+                    this->sortY = -1.f;
+                }
+                else
+                {
+                    this->slotStateType1[randAX] = true;
+                }
+
             }
             if (this->enemigos[i]->getXPos() < this->sortX)
             {
@@ -170,7 +273,11 @@ public:
             {
                 this->enemigos[i]->moveUp();
             }
-            if ((abs(this->sortX - this->enemigos[i]->getXPos())) <= 2.5 && (abs(this->sortY - this->enemigos[i]->getYPos())) < 2.5)
+            if(this->enemigos[i]->getYPos() < this->sortY)
+            {
+                this->enemigos[i]->moveDown();
+            }
+            if ((abs(this->sortX - this->enemigos[i]->getXPos())) <= this->enemigos[i]->getSpeed() && (abs(this->sortY - this->enemigos[i]->getYPos())) < this->enemigos[i]->getSpeed())
             {
                 this->enemigos[i]->setToXY(this->sortX, this->sortY);
             }
@@ -179,8 +286,42 @@ public:
         {
             if (this->sortX == -1.f && this->sortY == -1.f)
             {
-                this->sortX = this->xPosArray[rand() % 7];
-                this->sortY = this->yposType2[rand() % 1];
+                this->randAX = rand() % 8;
+                this->randAY = rand() % 2;
+                
+                this->sortX = this->xPosArray[this->randAX];
+                this->sortY = this->yposType2[this->randAY];
+
+                if(this->randAY == 0)
+                {
+                    if(this->slotStateType2R1[this->randAX] == true)
+                    {
+                        this->sortX = -1.f;
+                        this->sortY = -1.f;
+
+                        this->randAX = rand() % 8;
+                        this->randAY = rand() % 2;
+                    }
+                    else
+                    {
+                        this->slotStateType2R1[this->randAX] = true;
+                    }
+                }
+                else if(this->randAY == 1)
+                {
+                    if(this->slotStateType2R2[this->randAX] == true)
+                    {
+                        this->sortX = -1.f;
+                        this->sortY = -1.f;
+
+                        this->randAX = rand() % 8;
+                        this->randAY = rand() % 2;
+                    }
+                    else
+                    {
+                        this->slotStateType2R2[this->randAX] = true;
+                    }
+                }
             }
             if (this->enemigos[i]->getXPos() < this->sortX)
             {
@@ -195,7 +336,11 @@ public:
             {
                 this->enemigos[i]->moveUp();
             }
-            if ((abs(this->sortX - this->enemigos[i]->getXPos())) <= 2.5 && (abs(this->sortY - this->enemigos[i]->getYPos())) < 2.5)
+            if(this->enemigos[i]->getYPos() < this->sortY)
+            {
+                this->enemigos[i]->moveDown();
+            }
+            if ((abs(this->sortX - this->enemigos[i]->getXPos())) <= this->enemigos[i]->getSpeed() && (abs(this->sortY - this->enemigos[i]->getYPos())) < this->enemigos[i]->getSpeed())
             {
                 this->enemigos[i]->setToXY(this->sortX, this->sortY);
             }
@@ -204,8 +349,42 @@ public:
         {
             if (this->sortX == -1.f && this->sortY == -1.f)
             {
-                this->sortX = this->xPosArray[rand() % 7];
-                this->sortY = this->yposType3[rand() % 1];
+                this->randAX = rand() % 8;
+                this->randAY = rand() % 2;
+                
+                this->sortX = this->xPosArray[this->randAX];
+                this->sortY = this->yposType3[this->randAY];
+
+                if(this->randAY == 0)
+                {
+                    if(this->slotStateType3R1[this->randAX] == true)
+                    {
+                        this->sortX = -1.f;
+                        this->sortY = -1.f;
+
+                        this->randAX = rand() % 8;
+                        this->randAY = rand() % 2;
+                    }
+                    else
+                    {
+                        this->slotStateType3R1[this->randAX] = true;
+                    }
+                }
+                else if(this->randAY == 1)
+                {
+                    if(this->slotStateType3R2[this->randAX] == true)
+                    {
+                        this->sortX = -1.f;
+                        this->sortY = -1.f;
+
+                        this->randAX = rand() % 8;
+                        this->randAY = rand() % 2;
+                    }
+                    else
+                    {
+                        this->slotStateType3R2[this->randAX] = true;
+                    }
+                }
             }
             if (this->enemigos[i]->getXPos() < this->sortX)
             {
@@ -220,7 +399,11 @@ public:
             {
                 this->enemigos[i]->moveUp();
             }
-            if ((abs(this->sortX - this->enemigos[i]->getXPos())) <= 2.5 && (abs(this->sortY - this->enemigos[i]->getYPos())) < 2.5)
+            if(this->enemigos[i]->getYPos() < this->sortY)
+            {
+                this->enemigos[i]->moveDown();
+            }
+            if ((abs(this->sortX - this->enemigos[i]->getXPos())) <= this->enemigos[i]->getSpeed() && (abs(this->sortY - this->enemigos[i]->getYPos())) < this->enemigos[i]->getSpeed())
             {
                 this->enemigos[i]->setToXY(this->sortX, this->sortY);
             }
@@ -231,6 +414,7 @@ public:
             this->sortX = -1.f;
             this->sortY = -1.f;
             this->readyToSort = false;
+            this->enemySorted[i] = 1;
         }
     }
 
@@ -238,9 +422,11 @@ public:
     {
         // Establece la posición inicial del enemigo antes de aparecer en la pantalla
         if (this->moveStep == -1.f)
-        {
+        {   
+            
             this->enemigos[i]->setToXY(310.f, -40.f);
             this->moveStep = 0.f;
+            this->isSorted = false;
         }
 
         // Primer movimiento
@@ -322,7 +508,7 @@ public:
         {
             this->readyToSort = true;
             this->moveStep = -1.f;
-            this->trajectoryFinished = true;
+            this->trajectoryPicked = rand() % 2;
         }
         return readyToSort;
     }
@@ -415,35 +601,58 @@ public:
         {
             this->readyToSort = true;
             this->moveStep = -1.f;
-            this->trajectoryFinished = true;
+            this->trajectoryPicked = rand() % 2;
         }
         return readyToSort;
     }
 
     void updateEnemigos()
     {
-        // this->spawnTimer += 1.f;
-        if (this->spawnTimer >= this->spawnTimerMax)
+        if(firstEnemy == true) //Primer caso únicamente aplicando al primer enemigo generado
         {
-            this->enemigos.push_back(new Enemigo(240.f, 0.f));
-            this->spawnTimer = 0.f;
+            this->enemigos.push_back(new Enemigo(-10000.f, 10000.f)); //Crea un enemigo en el vector de enemigos
+            this->enemySorted.push_back(0); //En el vector de enemigos ordenados se asigna un 0 en la posición correspondiente al enemigo
+            this->firstEnemy = false;
         }
+        
+        std::cout << this->enemigos.size() << std::endl;
 
-        if (this->trajectoryFinished == false)
+        for(int i = 0; i < this->enemigos.size() ; i++)
         {
-            for (int i = 0; i < this->enemigos.size(); i++)
-            {
-                trajectoryE2(i);
+            if(this->readyToSort == false && this->enemySorted[i] == 0)
+            {   
+                if(trajectoryPicked == 0)
+                {
+                    trajectoryE1(i);
+                }
+                else
+                {
+                    trajectoryE2(i);
+                }
             }
-        }
 
-        if (this->readyToSort == true)
-        {
-            for (int i = 0; i < this->enemigos.size(); i++)
+            if(this->readyToSort == true && this->enemySorted[i] == 0)
             {
                 sortEnemy(i);
             }
+
+            j = i;
         }
+        
+        if(firstEnemy == false && enemySorted[j] == 1 && !isType1Full() && !isType2Full() && !isType3Full())
+        {
+            this->enemigos.push_back(new Enemigo(0.f, 1000.f));
+            this->enemySorted.push_back(0);
+            this->readyToSort = false;
+        }
+        else if(this->enemigos.size() == 0)
+        {
+            this->enemigos.push_back(new Enemigo(0.f, 1000.f));
+            this->enemySorted.push_back(0);
+            this->readyToSort = false;
+            
+        }
+        
 
         /*
         Esta sección de la función se encarga de detectar la colisión de los proyectiles de la nave con los enemigos,
@@ -456,10 +665,84 @@ public:
             bool enemigoEliminado = false;
             for (size_t k = 0; k < nave->getProyectilesSize() && !enemigoEliminado; k++)
             {
+                
+                
                 if (nave->getProyectilesBounds(k).intersects(this->enemigos[i]->getBounds()))
                 {
+                    float X = this->enemigos[i]->getXPos();
+                    float Y = this->enemigos[i]->getYPos();
+                    
+                    for(int j = 0 ; this->slotReseted == false && j<=1; j++)
+                    {
+                        if(Y == yPosType1)
+                        {
+                            yDelete = 11;
+                        }
+                        else if(Y == yposType2[j])
+                        {
+                            if(j == 0)
+                            {
+                                yDelete = 21;
+                            }
+                            else if(j == 1)
+                            {
+                                yDelete = 22;
+                            }
+                        }
+                        else if(Y == yposType3[j])
+                        {
+                            if(j == 0)
+                            {
+                                yDelete = 31;
+                            }
+                            else if(j == 1)
+                            {
+                                yDelete = 32;
+                            }
+                        }
+
+                        if(yDelete > 0)
+                        {
+                            for(int l = 0 ; this->slotReseted == false && l <= 7 ; l++)
+                            {
+                                if(X == this->xPosArray[l])
+                                {
+                                    this->slotReseted = true;
+                                    if(yDelete == 11)
+                                    {
+                                        this->slotStateType1[l] = false;
+                                    }
+                                    else if(yDelete == 21)
+                                    {
+                                        this->slotStateType2R1[l] = false;
+                                    }
+                                    else if(yDelete == 22)
+                                    {
+                                        this->slotStateType2R2[l] = false;
+                                    }
+                                    else if(yDelete == 31)
+                                    {
+                                        this->slotStateType3R1[l] = false;
+                                    }
+                                    else if(yDelete == 32)
+                                    {
+                                        this->slotStateType3R2[l] = false;
+                                    }
+                                }
+                            }
+                        }
+                        this->slotReseted = false;
+                    }
+                    
                     this->enemigos.erase(this->enemigos.begin() + i);
                     nave->deleteProyectil(k);
+
+                    if(enemySorted[i] == 0)
+                    {
+                       this->moveStep = -1.f; 
+                    }
+                    this->enemySorted.erase(this->enemySorted.begin() + i);
+                    
                     enemigoEliminado = true;
                     // std::cout << "Enemigo eliminado" << std::endl;
                     // std::cout << this->enemigos.size() << std::endl;
