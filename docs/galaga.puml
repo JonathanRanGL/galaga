@@ -1,9 +1,12 @@
 @startuml galaga
 
-class Alien{
+class Alien
+{
     - valor : int
 }
-class Enemigo{
+
+class Enemigo
+{
     - posX
     - posY
     + MoverDerecha()
@@ -14,14 +17,18 @@ class Enemigo{
     + Morir()
     + Aparecer()
 }
-class Escorpion
-class Mosca
+
+class Jefe
+class Mariposa
 class Abeja
 
-class Jugador{
+class Jugador
+{
     + Jugar()
 }
-class Nave{
+
+class Nave
+{
     - posX
     - posY
     - textura
@@ -31,33 +38,43 @@ class Nave{
     + Morir()
     + Reaparecer()
 }
+
 class Proyectil{
     - posX
     - posY
     - velocidad
     + Colisionar()
 }
-class Colisionable{
+
+class Colisionable
+{
     - acumulado : int
     + DetectarColision()
 }
 
-class Juego{
+class Juego
+{
     + Iniciar()
     + Terminar()
 }
-class Nivel{
+
+class Nivel
+{
     - duracion : int
     + Inciar()
     + Completar()
     + Perder()
 }
-class Vida{
+
+class Vida
+{
     - cantidad : int
     + Restar()
     + Reestablecer()
 }
-class Puntuacion{
+
+class Puntuacion
+{
     - nivel1 : int
     - nivel2 : int
     - nivel3 : int
@@ -78,9 +95,9 @@ Nivel "1" *-- "1" Puntuacion
 Nivel "1" *-- "*" Enemigo
 
 Alien --|> Enemigo
-Escorpion --|> Alien
+Jefe --|> Alien
 Abeja --|> Alien
-Mosca --|> Alien
+Mariposa --|> Alien
 
 Proyectil o-- Colisionable
 Enemigo --|> Colisionable

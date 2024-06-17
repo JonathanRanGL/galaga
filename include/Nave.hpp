@@ -10,11 +10,10 @@
 class Nave
 {
 private:
-    
     // Variables
     sf::Sprite nave;
     sf::Texture texture;
-    
+
     sf::SoundBuffer buffer;
     sf::Sound disparo;
 
@@ -29,8 +28,8 @@ public:
 
     void innitTexture()
     {
-        //Cargar la textura de la nave
-        if(!this->texture.loadFromFile("./assets/images/nave.png"))
+        // Cargar la textura de la nave
+        if (!this->texture.loadFromFile("./assets/images/nave.png"))
         {
             std::cout << "ERROR::Nave::innitTexture::No se pudo cargar la textura de la nave" << std::endl;
         }
@@ -39,17 +38,17 @@ public:
 
     void innitSprite()
     {
-        //Asignar la textura a la nave
+        // Asignar la textura a la nave
         this->nave.setTexture(this->texture);
 
-        //Escalar la sprite de la nave al tamaño deseado
+        // Escalar la sprite de la nave al tamaño deseado
         this->nave.scale(0.1, 0.1);
     }
 
     void innitSound()
     {
-        //Cargar el sonido para cada disparo de la nave
-        if(!this->buffer.loadFromFile("./assets/music/disparo.wav"))
+        // Cargar el sonido para cada disparo de la nave
+        if (!this->buffer.loadFromFile("./assets/music/disparo.wav"))
         {
             std::cout << "ERROR::Nave::innitSound::No se pudo cargar el sonido de disparo" << std::endl;
         }

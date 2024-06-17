@@ -133,7 +133,7 @@ public:
         */
         return this->speed;
     }
-    
+
     float getXPos()
     {
         /*
