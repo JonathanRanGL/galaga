@@ -9,6 +9,7 @@
 #include <Nave.hpp>
 #include <Proyectil.hpp>
 #include <Enemigo.hpp>
+#include <Abeja.hpp>
 
 class Game
 {
@@ -65,6 +66,8 @@ private:
     // Objetos dentro del juego
 
     Nave *nave;
+
+    std::vector<Abeja *> abejas;
 
     /*
     Se crea un vector de enemigos encargado de almacenar los datos de todos los enemigos activos.
@@ -140,6 +143,11 @@ public:
 
         // Eliminar enemigos
         for (auto *i : this->enemigos)
+        {
+            delete i;
+        }
+
+        for (auto *i : this->abejas)
         {
             delete i;
         }
@@ -223,6 +231,271 @@ public:
                 break;
             }
         }
+    }
+
+    void sortEnemyA(int i)
+    {
+        if (this->sortX == -1.f && this->sortY == -1.f)
+            {
+                this->randAX = rand() % 8;
+                this->randAY = rand() % 2;
+
+                this->sortX = this->xPosArray[this->randAX];
+                this->sortY = this->yposType3[this->randAY];
+
+                if (this->randAY == 0)
+                {
+                    if (this->slotStateType3R1[this->randAX] == true)
+                    {
+                        this->sortX = -1.f;
+                        this->sortY = -1.f;
+
+                        this->randAX = rand() % 8;
+                        this->randAY = rand() % 2;
+                    }
+                    else
+                    {
+                        this->slotStateType3R1[this->randAX] = true;
+                    }
+                }
+                else if (this->randAY == 1)
+                {
+                    if (this->slotStateType3R2[this->randAX] == true)
+                    {
+                        this->sortX = -1.f;
+                        this->sortY = -1.f;
+
+                        this->randAX = rand() % 8;
+                        this->randAY = rand() % 2;
+                    }
+                    else
+                    {
+                        this->slotStateType3R2[this->randAX] = true;
+                    }
+                }
+            }
+            if (this->abejas[i]->getXPos() < this->sortX)
+            {
+                this->abejas[i]->moveRight();
+                
+            }
+            else if (this->abejas[i]->getXPos() > this->sortX)
+            {
+                this->abejas[i]->moveLeft();
+                
+            }
+
+            if (this->abejas[i]->getYPos() > this->sortY)
+            {
+                this->abejas[i]->moveUp();
+                
+            }
+            if (this->abejas[i]->getYPos() < this->sortY)
+            {
+                this->abejas[i]->moveDown();
+                
+            }
+            if ((abs(this->sortX - this->abejas[i]->getXPos())) <= this->abejas[i]->getSpeed() && (abs(this->sortY - this->abejas[i]->getYPos())) < this->abejas[i]->getSpeed())
+            {
+                this->abejas[i]->setToXY(this->sortX, this->sortY);
+                
+            }
+
+        if (this->sortX == this->abejas[i]->getXPos() && this->sortY == this->abejas[i]->getYPos())
+        {
+            this->sortX = -1.f;
+            this->sortY = -1.f;
+            this->readyToSort = false;
+            this->enemySorted[i] = 1;
+        }
+    }
+
+    void checkAbejas()
+    {
+        for (int i = 0; i < this->abejas.size(); i++)
+        {
+            bool enemigoEliminado = false;
+            for (size_t k = 0; k < nave->getProyectilesSize() && !enemigoEliminado; k++)
+            {
+
+                if (nave->getProyectilesBounds(k).intersects(this->abejas[i]->getBounds()))
+                {
+                    float X = this->abejas[i]->getXPos();
+                    float Y = this->abejas[i]->getYPos();
+                    this->abejas[i]->playDeathSound();
+
+                    for (int j = 0; this->slotReseted == false && j <= 1; j++)
+                    {
+                        if (Y == yPosType1)
+                        {
+                            yDelete = 11;
+                        }
+                        else if (Y == yposType2[j])
+                        {
+                            if (j == 0)
+                            {
+                                yDelete = 21;
+                            }
+                            else if (j == 1)
+                            {
+                                yDelete = 22;
+                            }
+                        }
+                        else if (Y == yposType3[j])
+                        {
+                            if (j == 0)
+                            {
+                                yDelete = 31;
+                            }
+                            else if (j == 1)
+                            {
+                                yDelete = 32;
+                            }
+                        }
+
+                        if (yDelete > 0)
+                        {
+                            for (int l = 0; this->slotReseted == false && l <= 7; l++)
+                            {
+                                if (X == this->xPosArray[l])
+                                {
+                                    this->slotReseted = true;
+                                    if (yDelete == 11)
+                                    {
+                                        this->slotStateType1[l] = false;
+                                    }
+                                    else if (yDelete == 21)
+                                    {
+                                        this->slotStateType2R1[l] = false;
+                                    }
+                                    else if (yDelete == 22)
+                                    {
+                                        this->slotStateType2R2[l] = false;
+                                    }
+                                    else if (yDelete == 31)
+                                    {
+                                        this->slotStateType3R1[l] = false;
+                                    }
+                                    else if (yDelete == 32)
+                                    {
+                                        this->slotStateType3R2[l] = false;
+                                    }
+                                }
+                            }
+                        }
+                        this->slotReseted = false;
+                    }
+
+                    this->abejas.erase(this->abejas.begin() + i);
+                    nave->deleteProyectil(k);
+
+                    if (enemySorted[i] == 0)
+                    {
+                        this->moveStep = -1.f;
+                    }
+                    this->enemySorted.erase(this->enemySorted.begin() + i);
+
+                    enemigoEliminado = true;
+                    // std::cout << "Enemigo eliminado" << std::endl;
+                    // std::cout << this->enemigos.size() << std::endl;
+                }
+            }
+        }
+    }
+
+    bool trajectoryA1(int i) // Trayectoria 1 para enemigos.
+    {
+        // Establece la posición inicial del enemigo antes de aparecer en la pantalla
+        if (this->moveStep == -1.f)
+        {
+
+            this->abejas[i]->setToXY(310.f, -40.f);
+            this->moveStep = 0.f;
+            this->isSorted = false;
+        }
+
+        // Primer movimiento
+        if (this->abejas[i]->getYPos() < 100.f && this->moveStep == 0.f)
+        {
+            this->abejas[i]->moveDown();
+        }
+        else if (this->moveStep == 0.f)
+        {
+            this->moveStep = 1.f;
+        }
+
+        // Segundo movimiento
+        if (this->abejas[i]->getXPos() < 450.f && this->moveStep == 1.f)
+        {
+            this->abejas[i]->moveDiagDownRight(1.5, 1.f);
+        }
+        else if (this->moveStep == 1.f)
+        {
+            this->moveStep = 2.f;
+        }
+
+        // Tercer movimiento
+        if (this->abejas[i]->getXPos() < 500.f && this->moveStep == 2.f)
+        {
+            this->abejas[i]->moveDiagDownRight(1, 1.5);
+        }
+        else if (this->moveStep == 2.f)
+        {
+            this->moveStep = 3.f;
+        }
+
+        // Cuarto movimiento
+        if (this->abejas[i]->getYPos() < 380.f && this->moveStep == 3.f)
+        {
+            this->abejas[i]->moveDown();
+        }
+        else if (this->moveStep == 3.f)
+        {
+            this->moveStep = 4.f;
+        }
+
+        // Quinto movimiento
+        if (this->abejas[i]->getXPos() > 390.f && this->moveStep == 4.f)
+        {
+            this->abejas[i]->moveDiagDownLeft(1.3, 0.8);
+        }
+        else if (this->moveStep == 4.f)
+        {
+            this->moveStep = 5.f;
+        }
+
+        // Sexto movimiento
+        if (this->abejas[i]->getXPos() > 310.f && this->moveStep == 5.f)
+        {
+            this->abejas[i]->moveDiagUpLeft(1.3, 0.8);
+        }
+        else if (this->moveStep == 5.f)
+        {
+            this->moveStep = 6.f;
+        }
+
+        // Séptimo movimiento
+        if (this->abejas[i]->getYPos() > 360.f && this->moveStep == 6.f)
+        {
+            this->abejas[i]->moveUp();
+        }
+        else if (this->moveStep == 6.f)
+        {
+            this->moveStep = 7.f;
+        }
+
+        /*
+        Si el enemigo llega a la posición final, se prepara para ser ordenado establece la variable readyToSort en true,
+        se reinicia el contador de pasos de movimiento y se establece la variable trajectoryFinished en true indicando que
+        la trayectoria ha finalizado.
+        */
+        if (this->moveStep == 7.f)
+        {
+            this->readyToSort = true;
+            this->moveStep = -1.f;
+            this->trajectoryPicked = rand() % 2;
+        }
+        return readyToSort;
     }
 
     void sortEnemy(int i)
@@ -606,17 +879,21 @@ public:
     {
         if (firstEnemy == true) // Primer caso únicamente aplicando al primer enemigo generado
         {
-            this->enemigos.push_back(new Enemigo(-10000.f, 10000.f)); // Crea un enemigo en el vector de enemigos
+            this->abejas.push_back(new Abeja(-10000.f, 10000.f)); // Crea un enemigo en el vector de enemigos
             this->enemySorted.push_back(0);                           // En el vector de enemigos ordenados se asigna un 0 en la posición correspondiente al enemigo
             this->firstEnemy = false;
         }
 
-        std::cout << this->enemigos.size() << std::endl;
+        //std::cout << this->abejas.size() << std::endl;
 
-        for (int i = 0; i < this->enemigos.size(); i++)
+        for (int i = 0; i < this->abejas.size(); i++)
         {
             if (this->readyToSort == false && this->enemySorted[i] == 0)
             {
+                
+                trajectoryA1(i);
+
+                /*
                 if (trajectoryPicked == 0)
                 {
                     trajectoryE1(i);
@@ -625,11 +902,12 @@ public:
                 {
                     trajectoryE2(i);
                 }
+                */
             }
 
             if (this->readyToSort == true && this->enemySorted[i] == 0)
             {
-                sortEnemy(i);
+                sortEnemyA(i);
             }
 
             j = i;
@@ -637,111 +915,20 @@ public:
 
         if (firstEnemy == false && enemySorted[j] == 1 && !isType1Full() && !isType2Full() && !isType3Full())
         {
-            this->enemigos.push_back(new Enemigo(0.f, 1000.f));
+            this->abejas.push_back(new Abeja(0.f, 1000.f));
             this->enemySorted.push_back(0);
             this->readyToSort = false;
         }
-        else if (this->enemigos.size() == 0)
+        else if (this->abejas.size() == 0)
         {
-            this->enemigos.push_back(new Enemigo(0.f, 1000.f));
+            this->abejas.push_back(new Abeja(0.f, 1000.f));
             this->enemySorted.push_back(0);
             this->readyToSort = false;
         }
 
-        /*
-        Esta sección de la función se encarga de detectar la colisión de los proyectiles de la nave con los enemigos,
-        en caso de haber un impacto, es decir, sus hitboxes se intersectan, se elimina el enemigo y el proyectil de
-        su correspondiente vector.
-        */
+        this->checkAbejas();
 
-        for (int i = 0; i < this->enemigos.size(); i++)
-        {
-            bool enemigoEliminado = false;
-            for (size_t k = 0; k < nave->getProyectilesSize() && !enemigoEliminado; k++)
-            {
-
-                if (nave->getProyectilesBounds(k).intersects(this->enemigos[i]->getBounds()))
-                {
-                    float X = this->enemigos[i]->getXPos();
-                    float Y = this->enemigos[i]->getYPos();
-
-                    for (int j = 0; this->slotReseted == false && j <= 1; j++)
-                    {
-                        if (Y == yPosType1)
-                        {
-                            yDelete = 11;
-                        }
-                        else if (Y == yposType2[j])
-                        {
-                            if (j == 0)
-                            {
-                                yDelete = 21;
-                            }
-                            else if (j == 1)
-                            {
-                                yDelete = 22;
-                            }
-                        }
-                        else if (Y == yposType3[j])
-                        {
-                            if (j == 0)
-                            {
-                                yDelete = 31;
-                            }
-                            else if (j == 1)
-                            {
-                                yDelete = 32;
-                            }
-                        }
-
-                        if (yDelete > 0)
-                        {
-                            for (int l = 0; this->slotReseted == false && l <= 7; l++)
-                            {
-                                if (X == this->xPosArray[l])
-                                {
-                                    this->slotReseted = true;
-                                    if (yDelete == 11)
-                                    {
-                                        this->slotStateType1[l] = false;
-                                    }
-                                    else if (yDelete == 21)
-                                    {
-                                        this->slotStateType2R1[l] = false;
-                                    }
-                                    else if (yDelete == 22)
-                                    {
-                                        this->slotStateType2R2[l] = false;
-                                    }
-                                    else if (yDelete == 31)
-                                    {
-                                        this->slotStateType3R1[l] = false;
-                                    }
-                                    else if (yDelete == 32)
-                                    {
-                                        this->slotStateType3R2[l] = false;
-                                    }
-                                }
-                            }
-                        }
-                        this->slotReseted = false;
-                    }
-
-                    this->enemigos.erase(this->enemigos.begin() + i);
-                    nave->deleteProyectil(k);
-
-                    if (enemySorted[i] == 0)
-                    {
-                        this->moveStep = -1.f;
-                    }
-                    this->enemySorted.erase(this->enemySorted.begin() + i);
-
-                    enemigoEliminado = true;
-                    // std::cout << "Enemigo eliminado" << std::endl;
-                    // std::cout << this->enemigos.size() << std::endl;
-                }
-            }
-        }
+        
     }
 
     void update()
@@ -776,6 +963,11 @@ public:
         for (auto *Enemigo : this->enemigos)
         {
             Enemigo->render(this->window);
+        }
+
+        for (auto *Abeja : this->abejas)
+        {
+            Abeja->render(this->window);
         }
 
         // Una vez dibujados los elementos, se muestra la ventana (Equivale a 1 frame)

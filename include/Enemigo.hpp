@@ -14,9 +14,10 @@ private:
 
 protected:
     // Variables
-    sf::RectangleShape enemigo;
+    sf::Sprite enemigo;
     double speed;
     int tipo;
+    int movDirection;
 
 public:
     // Funciones
@@ -31,6 +32,7 @@ public:
         /*
         FUNCION TEMPORAL, SE CAMBIARÁ A UN SPRITE EN EL FUTURO
         */
+       /*
         this->enemigo.setSize(sf::Vector2f(40.f, 40.f));
 
         switch (this->tipo)
@@ -45,6 +47,7 @@ public:
             this->enemigo.setFillColor(sf::Color::Yellow);
             break;
         }
+        */
     }
 
     // ------------------------------------------------------------------------------------------------------------------------------------
@@ -62,26 +65,31 @@ public:
         Esta función permite establecer una posición en X y Y para el enemigo por fuera de la clase enemigo.
         */
         this->enemigo.setPosition(posX, posY);
+        this->movDirection = 0;
     }
 
     void moveUp()
     {
         this->enemigo.move(0.f, -this->speed);
+        this->movDirection = 8;
     }
 
     void moveDown()
     {
         this->enemigo.move(0.f, this->speed);
+        this->movDirection = 2;
     }
 
     void moveLeft()
     {
         this->enemigo.move(-this->speed, 0.f);
+        this->movDirection = 4;
     }
 
     void moveRight()
     {
         this->enemigo.move(this->speed, 0.f);
+        this->movDirection = 6;
     }
 
     /*
@@ -97,21 +105,25 @@ public:
     void moveDiagDownRight(float factorX = 1.f, float factorY = 1.f)
     {
         this->enemigo.move(0.707 * this->speed * factorX, 0.707 * this->speed * factorY);
+        this->movDirection = 3;
     }
 
     void moveDiagDownLeft(float factorX = 1.f, float factorY = 1.f)
     {
         this->enemigo.move(-0.707 * this->speed * factorX, 0.707 * this->speed * factorY);
+        this->movDirection = 1;
     }
 
     void moveDiagUpRight(float factorX = 1.f, float factorY = 1.f)
     {
         this->enemigo.move(0.707 * this->speed * factorX, -0.707 * this->speed * factorY);
+        this->movDirection = 9;
     }
 
     void moveDiagUpLeft(float factorX = 1.f, float factorY = 1.f)
     {
         this->enemigo.move(-0.707 * this->speed * factorX, -0.707 * this->speed * factorY);
+        this->movDirection = 7;
     }
 
     // ------------------------------------------------------------------------------------------------------------------------------------
