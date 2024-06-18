@@ -33,6 +33,7 @@ public:
         {
             std::cout << "ERROR::Nave::innitTexture::No se pudo cargar la textura de la nave" << std::endl;
         }
+        disparo.setBuffer(buffer);
     }
 
     void innitSprite()
@@ -51,7 +52,6 @@ public:
         {
             std::cout << "ERROR::Nave::innitSound::No se pudo cargar el sonido de disparo" << std::endl;
         }
-        disparo.setBuffer(buffer);
     }
 
     void innitVariables()

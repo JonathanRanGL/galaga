@@ -17,25 +17,34 @@ protected:
     sf::RectangleShape enemigo;
     double speed;
     int tipo;
-    int movementDir;
 
 public:
-    
     // Funciones
     void innitVariables()
     {
         this->speed = 4.5;
-        //this->tipo = rand() % 3 + 1; // Genera un tipo de enemigo aleatorio (1, 2 o 3)
-        this->movementDir = 0;
+        this->tipo = rand() % 3 + 1; // Genera un tipo de enemigo aleatorio (1, 2 o 3)
     }
 
     void innitShape()
     {
-        
-        //FUNCION TEMPORAL, SE CAMBIARÁ A UN SPRITE EN EL FUTURO
-        this->enemigo.setFillColor(sf::Color::Yellow);
-        this->tipo = 3;
+        /*
+        FUNCION TEMPORAL, SE CAMBIARÁ A UN SPRITE EN EL FUTURO
+        */
         this->enemigo.setSize(sf::Vector2f(40.f, 40.f));
+
+        switch (this->tipo)
+        {
+        case 1:
+            this->enemigo.setFillColor(sf::Color::Magenta);
+            break;
+        case 2:
+            this->enemigo.setFillColor(sf::Color::Blue);
+            break;
+        case 3:
+            this->enemigo.setFillColor(sf::Color::Yellow);
+            break;
+        }
     }
 
     // ------------------------------------------------------------------------------------------------------------------------------------
@@ -53,31 +62,26 @@ public:
         Esta función permite establecer una posición en X y Y para el enemigo por fuera de la clase enemigo.
         */
         this->enemigo.setPosition(posX, posY);
-        this->movementDir = 0;
     }
 
     void moveUp()
     {
         this->enemigo.move(0.f, -this->speed);
-        this->movementDir = 8;
     }
 
     void moveDown()
     {
         this->enemigo.move(0.f, this->speed);
-        this->movementDir = 2;
     }
 
     void moveLeft()
     {
         this->enemigo.move(-this->speed, 0.f);
-        this->movementDir = 4;
     }
 
     void moveRight()
     {
         this->enemigo.move(this->speed, 0.f);
-        this->movementDir = 6;
     }
 
     /*
@@ -93,25 +97,21 @@ public:
     void moveDiagDownRight(float factorX = 1.f, float factorY = 1.f)
     {
         this->enemigo.move(0.707 * this->speed * factorX, 0.707 * this->speed * factorY);
-        this->movementDir = 3;
     }
 
     void moveDiagDownLeft(float factorX = 1.f, float factorY = 1.f)
     {
         this->enemigo.move(-0.707 * this->speed * factorX, 0.707 * this->speed * factorY);
-        this->movementDir = 1;
     }
 
     void moveDiagUpRight(float factorX = 1.f, float factorY = 1.f)
     {
         this->enemigo.move(0.707 * this->speed * factorX, -0.707 * this->speed * factorY);
-        this->movementDir = 9;
     }
 
     void moveDiagUpLeft(float factorX = 1.f, float factorY = 1.f)
     {
         this->enemigo.move(-0.707 * this->speed * factorX, -0.707 * this->speed * factorY);
-        this->movementDir = 7;
     }
 
     // ------------------------------------------------------------------------------------------------------------------------------------
@@ -171,7 +171,7 @@ public:
     Enemigo(float posX = 0.f, float posY = 0.f)
     {
         this->innitVariables();
-        //this->innitShape();
+        this->innitShape();
 
         this->enemigo.setPosition(posX, posY);
     }

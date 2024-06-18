@@ -5,12 +5,10 @@
 #include <SFML/Audio.hpp>
 #include <iostream>
 #include <math.h>
-#include <vector>
 
 #include <Nave.hpp>
 #include <Proyectil.hpp>
 #include <Enemigo.hpp>
-#include <Abeja.hpp>
 
 class Game
 {
@@ -67,7 +65,6 @@ private:
     // Objetos dentro del juego
 
     Nave *nave;
-    std::vector<Abeja *> abejas;
 
     /*
     Se crea un vector de enemigos encargado de almacenar los datos de todos los enemigos activos.
@@ -143,11 +140,6 @@ public:
 
         // Eliminar enemigos
         for (auto *i : this->enemigos)
-        {
-            delete i;
-        }
-
-        for (auto *i : this->abejas)
         {
             delete i;
         }
@@ -242,7 +234,6 @@ public:
         La posición que se le asigna en Y depende de su tipo, mientras que la posición en X es aleatoria para agregar un poco de
         variabilidad en la posición de los enemigos cada vez que se juegue una partida.
         */
-        //this->type = this->enemigos[i]->getType();
         this->type = this->enemigos[i]->getType();
         if (this->type == 1.f)
         {
@@ -268,28 +259,23 @@ public:
             if (this->enemigos[i]->getXPos() < this->sortX)
             {
                 this->enemigos[i]->moveRight();
-                //this->enemigos[i]->setCurrentSprite();
             }
             else if (this->enemigos[i]->getXPos() > this->sortX)
             {
                 this->enemigos[i]->moveLeft();
-                //this->abejas[i]->setCurrentSprite();
             }
 
             if (this->enemigos[i]->getYPos() > this->sortY)
             {
                 this->enemigos[i]->moveUp();
-                //this->abejas[i]->setCurrentSprite();
             }
             if (this->enemigos[i]->getYPos() < this->sortY)
             {
                 this->enemigos[i]->moveDown();
-                //this->abejas[i]->setCurrentSprite();
             }
             if ((abs(this->sortX - this->enemigos[i]->getXPos())) <= this->enemigos[i]->getSpeed() && (abs(this->sortY - this->enemigos[i]->getYPos())) < this->enemigos[i]->getSpeed())
             {
                 this->enemigos[i]->setToXY(this->sortX, this->sortY);
-                //this->abejas[i]->setCurrentSprite();
             }
         }
         else if (this->type == 2.f)
@@ -336,28 +322,23 @@ public:
             if (this->enemigos[i]->getXPos() < this->sortX)
             {
                 this->enemigos[i]->moveRight();
-                //this->abejas[i]->setCurrentSprite();
             }
             else if (this->enemigos[i]->getXPos() > this->sortX)
             {
                 this->enemigos[i]->moveLeft();
-                //this->abejas[i]->setCurrentSprite();
             }
 
             if (this->enemigos[i]->getYPos() > this->sortY)
             {
                 this->enemigos[i]->moveUp();
-                //this->abejas[i]->setCurrentSprite();
             }
             if (this->enemigos[i]->getYPos() < this->sortY)
             {
                 this->enemigos[i]->moveDown();
-                //this->abejas[i]->setCurrentSprite();
             }
             if ((abs(this->sortX - this->enemigos[i]->getXPos())) <= this->enemigos[i]->getSpeed() && (abs(this->sortY - this->enemigos[i]->getYPos())) < this->enemigos[i]->getSpeed())
             {
                 this->enemigos[i]->setToXY(this->sortX, this->sortY);
-                //this->abejas[i]->setCurrentSprite();
             }
         }
         else if (this->type == 3.f)
@@ -404,28 +385,23 @@ public:
             if (this->enemigos[i]->getXPos() < this->sortX)
             {
                 this->enemigos[i]->moveRight();
-                //this->abejas[i]->setCurrentSprite();
             }
             else if (this->enemigos[i]->getXPos() > this->sortX)
             {
                 this->enemigos[i]->moveLeft();
-                //this->enemigos[i]->setCurrentSprite();
             }
 
             if (this->enemigos[i]->getYPos() > this->sortY)
             {
                 this->enemigos[i]->moveUp();
-                //this->abejas[i]->setCurrentSprite();
             }
             if (this->enemigos[i]->getYPos() < this->sortY)
             {
                 this->enemigos[i]->moveDown();
-                //this->abejas[i]->setCurrentSprite();
             }
             if ((abs(this->sortX - this->enemigos[i]->getXPos())) <= this->enemigos[i]->getSpeed() && (abs(this->sortY - this->enemigos[i]->getYPos())) < this->enemigos[i]->getSpeed())
             {
                 this->enemigos[i]->setToXY(this->sortX, this->sortY);
-                //this->abejas[i]->setCurrentSprite();
             }
         }
 
@@ -445,7 +421,6 @@ public:
         {
 
             this->enemigos[i]->setToXY(310.f, -40.f);
-            //this->abejas[i]->setCurrentSprite();
             this->moveStep = 0.f;
             this->isSorted = false;
         }
@@ -454,7 +429,6 @@ public:
         if (this->enemigos[i]->getYPos() < 100.f && this->moveStep == 0.f)
         {
             this->enemigos[i]->moveDown();
-            //this->abejas[i]->setCurrentSprite();
         }
         else if (this->moveStep == 0.f)
         {
@@ -465,7 +439,6 @@ public:
         if (this->enemigos[i]->getXPos() < 450.f && this->moveStep == 1.f)
         {
             this->enemigos[i]->moveDiagDownRight(1.5, 1.f);
-            //this->abejas[i]->setCurrentSprite();
         }
         else if (this->moveStep == 1.f)
         {
@@ -476,7 +449,6 @@ public:
         if (this->enemigos[i]->getXPos() < 500.f && this->moveStep == 2.f)
         {
             this->enemigos[i]->moveDiagDownRight(1, 1.5);
-            //this->abejas[i]->setCurrentSprite();
         }
         else if (this->moveStep == 2.f)
         {
@@ -487,7 +459,6 @@ public:
         if (this->enemigos[i]->getYPos() < 380.f && this->moveStep == 3.f)
         {
             this->enemigos[i]->moveDown();
-            //this->abejas[i]->setCurrentSprite();
         }
         else if (this->moveStep == 3.f)
         {
@@ -498,7 +469,6 @@ public:
         if (this->enemigos[i]->getXPos() > 390.f && this->moveStep == 4.f)
         {
             this->enemigos[i]->moveDiagDownLeft(1.3, 0.8);
-            //this->abejas[i]->setCurrentSprite();
         }
         else if (this->moveStep == 4.f)
         {
@@ -509,7 +479,6 @@ public:
         if (this->enemigos[i]->getXPos() > 310.f && this->moveStep == 5.f)
         {
             this->enemigos[i]->moveDiagUpLeft(1.3, 0.8);
-            //this->abejas[i]->setCurrentSprite();
         }
         else if (this->moveStep == 5.f)
         {
@@ -520,7 +489,6 @@ public:
         if (this->enemigos[i]->getYPos() > 360.f && this->moveStep == 6.f)
         {
             this->enemigos[i]->moveUp();
-            //this->abejas[i]->setCurrentSprite();
         }
         else if (this->moveStep == 6.f)
         {
@@ -638,19 +606,18 @@ public:
     {
         if (firstEnemy == true) // Primer caso únicamente aplicando al primer enemigo generado
         {
-            this->enemigos.push_back(new Abeja(-100.f , -100.f)); // Crea un enemigo en el vector de enemigos
+            this->enemigos.push_back(new Enemigo(-10000.f, 10000.f)); // Crea un enemigo en el vector de enemigos
             this->enemySorted.push_back(0);                           // En el vector de enemigos ordenados se asigna un 0 en la posición correspondiente al enemigo
             this->firstEnemy = false;
         }
-        
+
         std::cout << this->enemigos.size() << std::endl;
 
         for (int i = 0; i < this->enemigos.size(); i++)
         {
             if (this->readyToSort == false && this->enemySorted[i] == 0)
             {
-                trajectoryE1(i);
-                /*if (trajectoryPicked == 0)
+                if (trajectoryPicked == 0)
                 {
                     trajectoryE1(i);
                 }
@@ -658,7 +625,6 @@ public:
                 {
                     trajectoryE2(i);
                 }
-                */
             }
 
             if (this->readyToSort == true && this->enemySorted[i] == 0)
@@ -671,18 +637,16 @@ public:
 
         if (firstEnemy == false && enemySorted[j] == 1 && !isType1Full() && !isType2Full() && !isType3Full())
         {
-            this->enemigos.push_back(new Enemigo(-100.f, -100.f));
+            this->enemigos.push_back(new Enemigo(0.f, 1000.f));
             this->enemySorted.push_back(0);
             this->readyToSort = false;
         }
         else if (this->enemigos.size() == 0)
         {
-            this->enemigos.push_back(new Enemigo(-100.f, -100.f));
+            this->enemigos.push_back(new Enemigo(0.f, 1000.f));
             this->enemySorted.push_back(0);
             this->readyToSort = false;
         }
-
-        
 
         /*
         Esta sección de la función se encarga de detectar la colisión de los proyectiles de la nave con los enemigos,
@@ -812,11 +776,6 @@ public:
         for (auto *Enemigo : this->enemigos)
         {
             Enemigo->render(this->window);
-        }
-
-        for (auto *Abeja : this->abejas)
-        {
-            Abeja->render(this->window);
         }
 
         // Una vez dibujados los elementos, se muestra la ventana (Equivale a 1 frame)
