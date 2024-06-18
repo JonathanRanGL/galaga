@@ -13,6 +13,7 @@
 #include <Enemigo.hpp>
 #include <Abeja.hpp>
 #include <Mariposa.hpp>
+#include <Jefe.hpp>
 
 class Game
 {
@@ -54,11 +55,14 @@ private:
     int randAX;
     int randAY;
     bool readyToSort;
+    int enemySpawnReset;
     int trajectoryPicked;
 
     int j;
 
     int yDelete;
+
+    int typeToGenerate;
 
     // Window
 
@@ -70,7 +74,7 @@ private:
 
     Nave *nave;
 
-    using EnemigosActivos = std::variant<Abeja *, Mariposa *>;
+    using EnemigosActivos = std::variant<Abeja *, Mariposa *, Jefe *>;
     std::vector<EnemigosActivos> enemigosActivos;
 
     std::vector<Abeja *> abejas;
@@ -115,6 +119,8 @@ private:
         this->type3Full = false;
 
         this->trajectoryPicked = rand() % 2;
+
+        this->typeToGenerate = 0;
     }
 
     void initWindow()
@@ -179,6 +185,7 @@ public:
             }
             else
             {
+                this->typeToGenerate = rand() % 3 + 1;
                 this->type1Full = true;
             }
         }
@@ -196,6 +203,7 @@ public:
             }
             else
             {
+                this->typeToGenerate = rand() % 3 + 1;
                 this->type2Full = true;
             }
         }
@@ -213,6 +221,7 @@ public:
             }
             else
             {
+                this->typeToGenerate = rand() % 3 + 1;
                 this->type3Full = true;
             }
         }
@@ -1240,6 +1249,7 @@ public:
             this->sortY = -1.f;
             this->readyToSort = false;
             this->enemySorted[i] = 1;
+            this->typeToGenerate = rand() % 3 + 1;
         }
     }
     
@@ -1264,86 +1274,111 @@ public:
                     float Y = std::visit([](const auto& arg){
                         return arg->getYPos();
                     }, enemigosActivos[i]);
-                    
-                    
-                    std::visit([](const auto& arg){
-                        arg->playDeathSound();
+
+                    this->type = std::visit([](const auto& arg){
+                        return arg->getType();
                     }, enemigosActivos[i]);
 
-                    for (int j = 0; this->slotReseted == false && j <= 1; j++)
-                    {
-                        if (Y == yPosType1)
-                        {
-                            yDelete = 11;
-                        }
-                        else if (Y == yposType2[j])
-                        {
-                            if (j == 0)
-                            {
-                                yDelete = 21;
-                            }
-                            else if (j == 1)
-                            {
-                                yDelete = 22;
-                            }
-                        }
-                        else if (Y == yposType3[j])
-                        {
-                            if (j == 0)
-                            {
-                                yDelete = 31;
-                            }
-                            else if (j == 1)
-                            {
-                                yDelete = 32;
-                            }
-                        }
+                    int hitCount = std::visit([](const auto& arg){
+                        return arg->getHitCount();
+                    }, enemigosActivos[i]);
 
-                        if (yDelete > 0)
+                    
+                    
+                    if(this->type == 1 && hitCount == 0)
+                    {
+                        std::visit([](const auto& arg){
+                            arg->playDamageSound();
+                        }, enemigosActivos[i]);
+                        
+                        std::visit([](const auto& arg){
+                            arg->takeHit();
+                        }, enemigosActivos[i]);
+                        
+                        nave->deleteProyectil(k);
+                    }
+                    else
+                    {
+                        std::visit([](const auto& arg){
+                            arg->playDeathSound();
+                        }, enemigosActivos[i]);
+
+                        for (int j = 0; this->slotReseted == false && j <= 1; j++)
                         {
-                            for (int l = 0; this->slotReseted == false && l <= 7; l++)
+                            if (Y == yPosType1)
                             {
-                                if (X == this->xPosArray[l])
+                                yDelete = 11;
+                            }
+                            else if (Y == yposType2[j])
+                            {
+                                if (j == 0)
                                 {
-                                    this->slotReseted = true;
-                                    if (yDelete == 11)
+                                    yDelete = 21;
+                                }
+                                else if (j == 1)
+                                {
+                                    yDelete = 22;
+                                }
+                            }
+                            else if (Y == yposType3[j])
+                            {
+                                if (j == 0)
+                                {
+                                    yDelete = 31;
+                                }
+                                else if (j == 1)
+                                {
+                                    yDelete = 32;
+                                }
+                            }
+
+                            if (yDelete > 0)
+                            {
+                                for (int l = 0; this->slotReseted == false && l <= 7; l++)
+                                {
+                                    if (X == this->xPosArray[l])
                                     {
-                                        this->slotStateType1[l] = false;
-                                    }
-                                    else if (yDelete == 21)
-                                    {
-                                        this->slotStateType2R1[l] = false;
-                                    }
-                                    else if (yDelete == 22)
-                                    {
-                                        this->slotStateType2R2[l] = false;
-                                    }
-                                    else if (yDelete == 31)
-                                    {
-                                        this->slotStateType3R1[l] = false;
-                                    }
-                                    else if (yDelete == 32)
-                                    {
-                                        this->slotStateType3R2[l] = false;
+                                        this->slotReseted = true;
+                                        if (yDelete == 11)
+                                        {
+                                            this->slotStateType1[l] = false;
+                                        }
+                                        else if (yDelete == 21)
+                                        {
+                                            this->slotStateType2R1[l] = false;
+                                        }
+                                        else if (yDelete == 22)
+                                        {
+                                            this->slotStateType2R2[l] = false;
+                                        }
+                                        else if (yDelete == 31)
+                                        {
+                                            this->slotStateType3R1[l] = false;
+                                        }
+                                        else if (yDelete == 32)
+                                        {
+                                            this->slotStateType3R2[l] = false;
+                                        }
                                     }
                                 }
                             }
+                            this->slotReseted = false;
                         }
-                        this->slotReseted = false;
+                        
+                        nave->deleteProyectil(k);
+                        this->enemigosActivos.erase(this->enemigosActivos.begin() + i);
+                        this->j = 0;
+
+                        if (enemySorted[i] == 0)
+                        {
+                            this->moveStep = -1.f;
+                        }
+                        this->enemySorted.erase(this->enemySorted.begin() + i);
+
+                        enemigoEliminado = true;
+                        // std::cout << "Enemigo eliminado" << std::endl;
+                        // std::cout << this->enemigos.size() << std::endl;
                     }
-
-                    this->enemigosActivos.erase(this->enemigosActivos.begin() + i);
-                    nave->deleteProyectil(k);
-
-                    if (enemySorted[i] == 0)
-                    {
-                        this->moveStep = -1.f;
-                    }
-                    this->enemySorted.erase(this->enemySorted.begin() + i);
-
-                    enemigoEliminado = true;
-                    // std::cout << "Enemigo eliminado" << std::endl;
-                    // std::cout << this->enemigos.size() << std::endl;
                 }
             }
         }
@@ -1354,13 +1389,13 @@ public:
     {
         if (firstEnemy == true) // Primer caso únicamente aplicando al primer enemigo generado
         {
-            //this->abejas.push_back(new Abeja(-10000.f, 10000.f)); // Crea un enemigo en el vector de enemigos
             this->enemigosActivos.push_back(new Abeja(-10000.f, 10000.f)); 
             this->enemySorted.push_back(0);                                 // En el vector de enemigos ordenados se asigna un 0 en la posición correspondiente al enemigo
             this->firstEnemy = false;
+            this->typeToGenerate = rand() % 3 + 1;
         }
 
-        std::cout << this->enemigosActivos.size() << std::endl;
+        //std::cout << this->enemigosActivos.size() << std::endl;
 
         for (int i = 0; i < this->enemigosActivos.size() ; i++)
         {
@@ -1368,6 +1403,7 @@ public:
             {
                 
                 trajectoryGEN1(i);
+                this->typeToGenerate = 0;
 
                 /*
                 if (trajectoryPicked == 0)
@@ -1389,21 +1425,56 @@ public:
             j = i;
         }
 
-        if (firstEnemy == false && enemySorted[j] == 1 && !isType1Full() && !isType2Full() && !isType3Full())
+
+        if (firstEnemy == false && enemySorted[j] == 1 && !isType1Full() && this->typeToGenerate == 1)
+        {
+            this->enemigosActivos.push_back(new Jefe(-10000.f, 10000.f)); 
+            this->enemySorted.push_back(0);
+            this->readyToSort = false;
+        }
+        if (firstEnemy == false && enemySorted[j] == 1 && !isType2Full() && this->typeToGenerate == 2)
         {
             this->enemigosActivos.push_back(new Mariposa(-10000.f, 10000.f)); 
             this->enemySorted.push_back(0);
             this->readyToSort = false;
         }
-        else if (this->enemigosActivos.size() == 0)
+        if (firstEnemy == false && enemySorted[j] == 1 && !isType3Full() && this->typeToGenerate == 3)
         {
-            this->enemigosActivos.push_back(new Mariposa(-10000.f, 10000.f)); 
+            this->enemigosActivos.push_back(new Abeja(-10000.f, 10000.f)); 
             this->enemySorted.push_back(0);
             this->readyToSort = false;
         }
 
-        //this->checkAbejas();
-
+        if (this->enemigosActivos.size() == 0)
+        {
+            typeToGenerate = rand() % 3 + 1;
+            if (this->typeToGenerate == 1)
+            {
+                this->enemigosActivos.push_back(new Jefe(-10000.f, 10000.f)); 
+                this->enemySorted.push_back(0);
+                this->readyToSort = false;
+            }
+            if (this->typeToGenerate == 2)
+            {
+                this->enemigosActivos.push_back(new Mariposa(-10000.f, 10000.f)); 
+                this->enemySorted.push_back(0);
+                this->readyToSort = false;
+            }
+            if (this->typeToGenerate == 3)
+            {
+                this->enemigosActivos.push_back(new Abeja(-10000.f, 10000.f)); 
+                this->enemySorted.push_back(0);
+                this->readyToSort = false;
+            }
+        }
+        
+        /*
+        for(int k = 0; k < this->enemySorted.size(); k++)
+        {
+            if(this->enemySorted[])
+        }
+*/
+        
 
         this->checkForHits();
 

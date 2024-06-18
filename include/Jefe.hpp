@@ -7,7 +7,7 @@
 
 #include <Enemigo.hpp>
 
-class Abeja : public Enemigo
+class Jefe : public Enemigo
 {
 private:
     sf::Texture texture;
@@ -15,26 +15,28 @@ private:
     float scaleX;
     float scaleY;
 
-    sf::SoundBuffer buffer;
-    sf::Sound death;
-
     int hitCount;
+
+    sf::SoundBuffer buffer;
+    sf::Sound damage;
+    sf::Sound death;
 
     void innitVariables()
     {
-        this->tipo = 3;
-        this->scaleX = 0.014;
-        this->scaleY = 0.014;
+        this->tipo = 1;
+        this->hitCount = 0;
+        this->scaleX = 0.018;
+        this->scaleY = 0.018;
     }
 
 public:
     
     void innitTexture()
     {
-        if (!this->texture.loadFromFile("./assets/images/abeja/abeja1.png"))
+        if (!this->texture.loadFromFile("./assets/images/jefe/jefe1.png"))
         {
             std::cout << "ERROR::Nave::innitTexture::No se pudo cargar la textura de la nave" << std::endl;
-        } 
+        }
     }
 
     void innitSprite()
@@ -43,41 +45,45 @@ public:
         this->enemigo.scale(scaleX, scaleY);
     }
 
-    void innitSound()
-    {
-        if (!this->buffer.loadFromFile("./assets/music/colisionA.wav"))
-        {
-            std::cout << "ERROR::Abeja::innitSound::No se pudo cargar el sonido de la muerte de la abeja" << std::endl;
-        }
-        death.setBuffer(buffer);
-    }
-
     void playDeathSound()
     {
+        if (!this->buffer.loadFromFile("./assets/music/colisionJ.wav"))
+        {
+            std::cout << "ERROR::Mariposa::innitSound::No se pudo cargar el sonido de disparo" << std::endl;
+        }
+        death.setBuffer(buffer);
+
         death.play();
     }
 
     void playDamageSound()
     {
+        if (!this->buffer.loadFromFile("./assets/music/danoJ.wav"))
+        {
+            std::cout << "ERROR::Mariposa::innitSound::No se pudo cargar el sonido de disparo" << std::endl;
+        }
+        damage.setBuffer(buffer);
+        
+        damage.play();
     }
 
     void takeHit()
     {
+        this->hitCount++;
     }
 
     int getHitCount()
     {
-        return 0;
+        return this->hitCount;
     }
-
-    Abeja(float posX = 0.f, float posY = 0.f)
+    
+    Jefe(float posX = 0.f, float posY = 0.f)
     {
         this->innitVariables();
         this->innitTexture();
         this->innitSprite();
-        this->innitSound();
 
         this->enemigo.setPosition(posX, posY);
     }
-    ~Abeja() {}
+    ~Jefe() {}
 };

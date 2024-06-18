@@ -18,11 +18,13 @@ private:
     sf::SoundBuffer buffer;
     sf::Sound death;
 
+    int hitCount;
+
     void innitVariables()
     {
         this->tipo = 2;
-        scaleX = 0.05;
-        scaleY = 0.05;
+        this->scaleX = 0.05;
+        this->scaleY = 0.05;
     }
 
 public:
@@ -53,6 +55,19 @@ public:
     void playDeathSound()
     {
         death.play();
+    }
+    
+    void playDamageSound()
+    {
+    }
+
+    void takeHit()
+    {
+    }
+
+    int getHitCount()
+    {
+        return 0;
     }
     
     Mariposa(float posX = 0.f, float posY = 0.f)
