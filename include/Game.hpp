@@ -5,11 +5,14 @@
 #include <SFML/Audio.hpp>
 #include <iostream>
 #include <math.h>
+#include <vector>
+#include <variant>
 
 #include <Nave.hpp>
 #include <Proyectil.hpp>
 #include <Enemigo.hpp>
 #include <Abeja.hpp>
+#include <Mariposa.hpp>
 
 class Game
 {
@@ -66,6 +69,9 @@ private:
     // Objetos dentro del juego
 
     Nave *nave;
+
+    using EnemigosActivos = std::variant<Abeja *, Mariposa *>;
+    std::vector<EnemigosActivos> enemigosActivos;
 
     std::vector<Abeja *> abejas;
 
@@ -875,23 +881,493 @@ public:
         return readyToSort;
     }
 
+    bool trajectoryGEN1(int i) // Trayectoria 1 para enemigos.
+    {
+        int VX = std::visit([](const auto& arg){
+            return arg->getXPos();
+        }, enemigosActivos[i]);
+        
+        int VY = std::visit([](const auto& arg){
+            return arg->getYPos();
+        }, enemigosActivos[i]);
+        
+        // Establece la posición inicial del enemigo antes de aparecer en la pantalla
+        if (this->moveStep == -1.f)
+        {
+            std::visit([](const auto& arg){
+                arg->setToXY(310.f, -40.f);
+            }, enemigosActivos[i]);
+            
+            this->moveStep = 0.f;
+            this->isSorted = false;
+        }
+
+        // Primer movimiento
+        if (VY < 100.f && this->moveStep == 0.f)
+        {
+            std::visit([](const auto& arg){
+                arg->moveDown();
+            }, enemigosActivos[i]);
+        }
+        else if (this->moveStep == 0.f)
+        {
+            this->moveStep = 1.f;
+        }
+
+        // Segundo movimiento
+        if(VX < 450.f && this->moveStep == 1.f)
+        {
+            std::visit([](const auto& arg){
+                arg->moveDiagDownRight(1.5, 1.f);
+            }, enemigosActivos[i]);
+        }
+        else if (this->moveStep == 1.f)
+        {
+            this->moveStep = 2.f;
+        }
+
+        // Tercer movimiento
+        if (VX < 500.f && this->moveStep == 2.f)
+        {
+            std::visit([](const auto& arg){
+                arg->moveDiagDownRight(1, 1.5);
+            }, enemigosActivos[i]);
+        }
+        else if (this->moveStep == 2.f)
+        {
+            this->moveStep = 3.f;
+        }
+
+        // Cuarto movimiento
+        if (VY < 380.f && this->moveStep == 3.f)
+        {
+            std::visit([](const auto& arg){
+                arg->moveDown();
+            }, enemigosActivos[i]);
+        }
+        else if (this->moveStep == 3.f)
+        {
+            this->moveStep = 4.f;
+        }
+
+        // Quinto movimiento
+        if (VX > 390.f && this->moveStep == 4.f)
+        {
+            std::visit([](const auto& arg){
+                arg->moveDiagDownLeft(1.3, 0.8);
+            }, enemigosActivos[i]);
+        }
+        else if (this->moveStep == 4.f)
+        {
+            this->moveStep = 5.f;
+        }
+
+        // Sexto movimiento
+        if (VX > 310.f && this->moveStep == 5.f)
+        {
+            std::visit([](const auto& arg){
+                arg->moveDiagUpLeft(1.3, 0.8);
+            }, enemigosActivos[i]);
+        }
+        else if (this->moveStep == 5.f)
+        {
+            this->moveStep = 6.f;
+        }
+
+        // Séptimo movimiento
+        if (VY > 360.f && this->moveStep == 6.f)
+        {
+            std::visit([](const auto& arg){
+                arg->moveUp();
+            }, enemigosActivos[i]);
+        }
+        else if (this->moveStep == 6.f)
+        {
+            this->moveStep = 7.f;
+        }
+
+        /*
+        Si el enemigo llega a la posición final, se prepara para ser ordenado establece la variable readyToSort en true,
+        se reinicia el contador de pasos de movimiento y se establece la variable trajectoryFinished en true indicando que
+        la trayectoria ha finalizado.
+        */
+        if (this->moveStep == 7.f)
+        {
+            this->readyToSort = true;
+            this->moveStep = -1.f;
+            this->trajectoryPicked = rand() % 2;
+        }
+        return readyToSort;
+    }
+    
+    void sortEnemyGEN(int i)
+    {
+        /*
+        Esta función se encarga de ordenar a los enemigos en la pantalla, dependiendo de su tipo, se les asigna una posición
+        en X y Y predefinidas según una matriz de posiciones, esto se ejecuta una vez que el enemigo haya terminado de recorrer
+        la trayectoria mediante la que aparece en la pantalla.
+        La posición que se le asigna en Y depende de su tipo, mientras que la posición en X es aleatoria para agregar un poco de
+        variabilidad en la posición de los enemigos cada vez que se juegue una partida.
+        */
+        this->type = std::visit([](const auto& arg){
+            return arg->getType();
+        }, enemigosActivos[i]);
+
+        int VX = std::visit([](const auto& arg){
+            return arg->getXPos();
+        }, enemigosActivos[i]);
+
+        int VY = std::visit([](const auto& arg){
+            return arg->getYPos();
+        }, enemigosActivos[i]);
+
+        int speed = std::visit([](const auto& arg){
+            return arg->getSpeed();
+        }, enemigosActivos[i]);
+
+        if (this->type == 1.f)
+        {
+            if (this->sortX == -1.f && this->sortY == -1.f)
+            {
+                randAX = rand() % 8;
+                randAY = 0;
+
+                this->sortX = this->xPosArray[randAX];
+                this->sortY = this->yPosType1;
+
+                if (this->slotStateType1[randAX] == true)
+                {
+                    randAX = rand() % 8;
+                    this->sortX = -1.f;
+                    this->sortY = -1.f;
+                }
+                else
+                {
+                    this->slotStateType1[randAX] = true;
+                }
+            }
+            if (VX < this->sortX)
+            {
+                std::visit([](const auto& arg){
+                    arg->moveRight();
+                }, enemigosActivos[i]);
+            }
+            else if (VX > this->sortX)
+            {
+                std::visit([](const auto& arg){
+                    arg->moveLeft();
+                }, enemigosActivos[i]);
+            }
+
+            if (VY > this->sortY)
+            {
+                std::visit([](const auto& arg){
+                    arg->moveUp();
+                }, enemigosActivos[i]);
+            }
+            if (VY < this->sortY)
+            {
+                std::visit([](const auto& arg){
+                    arg->moveDown();
+                }, enemigosActivos[i]);
+            }
+            
+            if ((abs(this->sortX - VX)) <= speed && (abs(this->sortY - VY)) < speed)
+            {
+                std::visit([this](const auto& arg){
+                    arg->setToXY(this->sortX, this->sortY);
+                }, enemigosActivos[i]);
+            }
+        }
+        else if (this->type == 2.f)
+        {
+            if (this->sortX == -1.f && this->sortY == -1.f)
+            {
+                this->randAX = rand() % 8;
+                this->randAY = rand() % 2;
+
+                this->sortX = this->xPosArray[this->randAX];
+                this->sortY = this->yposType2[this->randAY];
+
+                if (this->randAY == 0)
+                {
+                    if (this->slotStateType2R1[this->randAX] == true)
+                    {
+                        this->sortX = -1.f;
+                        this->sortY = -1.f;
+
+                        this->randAX = rand() % 8;
+                        this->randAY = rand() % 2;
+                    }
+                    else
+                    {
+                        this->slotStateType2R1[this->randAX] = true;
+                    }
+                }
+                else if (this->randAY == 1)
+                {
+                    if (this->slotStateType2R2[this->randAX] == true)
+                    {
+                        this->sortX = -1.f;
+                        this->sortY = -1.f;
+
+                        this->randAX = rand() % 8;
+                        this->randAY = rand() % 2;
+                    }
+                    else
+                    {
+                        this->slotStateType2R2[this->randAX] = true;
+                    }
+                }
+            }
+            if (VX < this->sortX)
+            {
+                std::visit([](const auto& arg){
+                    arg->moveRight();
+                }, enemigosActivos[i]);
+            }
+            else if (VX > this->sortX)
+            {
+                std::visit([](const auto& arg){
+                    arg->moveLeft();
+                }, enemigosActivos[i]);
+            }
+
+            if (VY > this->sortY)
+            {
+                std::visit([](const auto& arg){
+                    arg->moveUp();
+                }, enemigosActivos[i]);
+            }
+            if (VY < this->sortY)
+            {
+                std::visit([](const auto& arg){
+                    arg->moveDown();
+                }, enemigosActivos[i]);
+            }
+            if ((abs(this->sortX - VX)) <= speed && (abs(this->sortY - VY)) < speed)
+            {
+                std::visit([this](const auto& arg){
+                    arg->setToXY(this->sortX, this->sortY);
+                }, enemigosActivos[i]);
+            }
+        }
+        else if (this->type == 3.f)
+        {
+            if (this->sortX == -1.f && this->sortY == -1.f)
+            {
+                this->randAX = rand() % 8;
+                this->randAY = rand() % 2;
+
+                this->sortX = this->xPosArray[this->randAX];
+                this->sortY = this->yposType3[this->randAY];
+
+                if (this->randAY == 0)
+                {
+                    if (this->slotStateType3R1[this->randAX] == true)
+                    {
+                        this->sortX = -1.f;
+                        this->sortY = -1.f;
+
+                        this->randAX = rand() % 8;
+                        this->randAY = rand() % 2;
+                    }
+                    else
+                    {
+                        this->slotStateType3R1[this->randAX] = true;
+                    }
+                }
+                else if (this->randAY == 1)
+                {
+                    if (this->slotStateType3R2[this->randAX] == true)
+                    {
+                        this->sortX = -1.f;
+                        this->sortY = -1.f;
+
+                        this->randAX = rand() % 8;
+                        this->randAY = rand() % 2;
+                    }
+                    else
+                    {
+                        this->slotStateType3R2[this->randAX] = true;
+                    }
+                }
+            }
+            if (VX < this->sortX)
+            {
+                std::visit([](const auto& arg){
+                    arg->moveRight();
+                }, enemigosActivos[i]);
+            }
+            else if (VX > this->sortX)
+            {
+                std::visit([](const auto& arg){
+                    arg->moveLeft();
+                }, enemigosActivos[i]);
+            }
+
+            if (VY > this->sortY)
+            {
+                std::visit([](const auto& arg){
+                    arg->moveUp();
+                }, enemigosActivos[i]);
+            }
+            if (VY < this->sortY)
+            {
+                std::visit([](const auto& arg){
+                    arg->moveDown();
+                }, enemigosActivos[i]);
+            }
+            if ((abs(this->sortX - VX)) <= speed && (abs(this->sortY - VY)) < speed)
+            {
+                std::visit([this](const auto& arg){
+                    arg->setToXY(this->sortX, this->sortY);
+                }, enemigosActivos[i]);
+
+                VX = std::visit([](const auto& arg){
+                    return arg->getXPos();
+                }, enemigosActivos[i]);
+
+                VY = std::visit([](const auto& arg){
+                    return arg->getYPos();
+                }, enemigosActivos[i]);
+            }
+        }
+
+        if (this->sortX == VX && this->sortY == VY)
+        {
+            this->sortX = -1.f;
+            this->sortY = -1.f;
+            this->readyToSort = false;
+            this->enemySorted[i] = 1;
+        }
+    }
+    
+    void checkForHits()
+    {
+        for (int i = 0; i < this->enemigosActivos.size(); i++)
+        {
+            bool enemigoEliminado = false;
+            for (size_t k = 0; k < nave->getProyectilesSize() && !enemigoEliminado; k++)
+            {
+
+                if (nave->getProyectilesBounds(k).intersects(
+                        std::visit([](const auto& arg){
+                            return arg->getBounds();
+                        }, enemigosActivos[i])
+                    ))
+                {
+                    float X = std::visit([](const auto& arg){
+                        return arg->getXPos();
+                    }, enemigosActivos[i]);
+                    
+                    float Y = std::visit([](const auto& arg){
+                        return arg->getYPos();
+                    }, enemigosActivos[i]);
+                    
+                    
+                    std::visit([](const auto& arg){
+                        arg->playDeathSound();
+                    }, enemigosActivos[i]);
+
+                    for (int j = 0; this->slotReseted == false && j <= 1; j++)
+                    {
+                        if (Y == yPosType1)
+                        {
+                            yDelete = 11;
+                        }
+                        else if (Y == yposType2[j])
+                        {
+                            if (j == 0)
+                            {
+                                yDelete = 21;
+                            }
+                            else if (j == 1)
+                            {
+                                yDelete = 22;
+                            }
+                        }
+                        else if (Y == yposType3[j])
+                        {
+                            if (j == 0)
+                            {
+                                yDelete = 31;
+                            }
+                            else if (j == 1)
+                            {
+                                yDelete = 32;
+                            }
+                        }
+
+                        if (yDelete > 0)
+                        {
+                            for (int l = 0; this->slotReseted == false && l <= 7; l++)
+                            {
+                                if (X == this->xPosArray[l])
+                                {
+                                    this->slotReseted = true;
+                                    if (yDelete == 11)
+                                    {
+                                        this->slotStateType1[l] = false;
+                                    }
+                                    else if (yDelete == 21)
+                                    {
+                                        this->slotStateType2R1[l] = false;
+                                    }
+                                    else if (yDelete == 22)
+                                    {
+                                        this->slotStateType2R2[l] = false;
+                                    }
+                                    else if (yDelete == 31)
+                                    {
+                                        this->slotStateType3R1[l] = false;
+                                    }
+                                    else if (yDelete == 32)
+                                    {
+                                        this->slotStateType3R2[l] = false;
+                                    }
+                                }
+                            }
+                        }
+                        this->slotReseted = false;
+                    }
+
+                    this->enemigosActivos.erase(this->enemigosActivos.begin() + i);
+                    nave->deleteProyectil(k);
+
+                    if (enemySorted[i] == 0)
+                    {
+                        this->moveStep = -1.f;
+                    }
+                    this->enemySorted.erase(this->enemySorted.begin() + i);
+
+                    enemigoEliminado = true;
+                    // std::cout << "Enemigo eliminado" << std::endl;
+                    // std::cout << this->enemigos.size() << std::endl;
+                }
+            }
+        }
+    }
+
+
     void updateEnemigos()
     {
         if (firstEnemy == true) // Primer caso únicamente aplicando al primer enemigo generado
         {
-            this->abejas.push_back(new Abeja(-10000.f, 10000.f)); // Crea un enemigo en el vector de enemigos
-            this->enemySorted.push_back(0);                           // En el vector de enemigos ordenados se asigna un 0 en la posición correspondiente al enemigo
+            //this->abejas.push_back(new Abeja(-10000.f, 10000.f)); // Crea un enemigo en el vector de enemigos
+            this->enemigosActivos.push_back(new Abeja(-10000.f, 10000.f)); 
+            this->enemySorted.push_back(0);                                 // En el vector de enemigos ordenados se asigna un 0 en la posición correspondiente al enemigo
             this->firstEnemy = false;
         }
 
-        //std::cout << this->abejas.size() << std::endl;
+        std::cout << this->enemigosActivos.size() << std::endl;
 
-        for (int i = 0; i < this->abejas.size(); i++)
+        for (int i = 0; i < this->enemigosActivos.size() ; i++)
         {
             if (this->readyToSort == false && this->enemySorted[i] == 0)
             {
                 
-                trajectoryA1(i);
+                trajectoryGEN1(i);
 
                 /*
                 if (trajectoryPicked == 0)
@@ -907,7 +1383,7 @@ public:
 
             if (this->readyToSort == true && this->enemySorted[i] == 0)
             {
-                sortEnemyA(i);
+                sortEnemyGEN(i);
             }
 
             j = i;
@@ -915,18 +1391,21 @@ public:
 
         if (firstEnemy == false && enemySorted[j] == 1 && !isType1Full() && !isType2Full() && !isType3Full())
         {
-            this->abejas.push_back(new Abeja(0.f, 1000.f));
+            this->enemigosActivos.push_back(new Mariposa(-10000.f, 10000.f)); 
             this->enemySorted.push_back(0);
             this->readyToSort = false;
         }
-        else if (this->abejas.size() == 0)
+        else if (this->enemigosActivos.size() == 0)
         {
-            this->abejas.push_back(new Abeja(0.f, 1000.f));
+            this->enemigosActivos.push_back(new Mariposa(-10000.f, 10000.f)); 
             this->enemySorted.push_back(0);
             this->readyToSort = false;
         }
 
-        this->checkAbejas();
+        //this->checkAbejas();
+
+
+        this->checkForHits();
 
         
     }
@@ -968,6 +1447,13 @@ public:
         for (auto *Abeja : this->abejas)
         {
             Abeja->render(this->window);
+        }
+
+        for(int i = 0; i < this->enemigosActivos.size(); i++)
+        {
+            std::visit([this](const auto& arg){
+                arg->render(this->window);
+            }, enemigosActivos[i]);
         }
 
         // Una vez dibujados los elementos, se muestra la ventana (Equivale a 1 frame)

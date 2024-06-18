@@ -7,7 +7,7 @@
 
 #include <Enemigo.hpp>
 
-class Abeja : public Enemigo
+class Mariposa : public Enemigo
 {
 private:
     sf::Texture texture;
@@ -20,19 +20,19 @@ private:
 
     void innitVariables()
     {
-        this->tipo = 3;
-        scaleX = 0.014;
-        scaleY = 0.014;
+        this->tipo = 2;
+        scaleX = 0.05;
+        scaleY = 0.05;
     }
 
 public:
     
     void innitTexture()
     {
-        if (!this->texture.loadFromFile("./assets/images/abeja/abeja1.png"))
+        if (!this->texture.loadFromFile("./assets/images/mariposa/mariposa1.png"))
         {
             std::cout << "ERROR::Nave::innitTexture::No se pudo cargar la textura de la nave" << std::endl;
-        } 
+        }
     }
 
     void innitSprite()
@@ -43,9 +43,9 @@ public:
 
     void innitSound()
     {
-        if (!this->buffer.loadFromFile("./assets/music/colisionA.wav"))
+        if (!this->buffer.loadFromFile("./assets/music/colisionM.wav"))
         {
-            std::cout << "ERROR::Abeja::innitSound::No se pudo cargar el sonido de la muerte de la abeja" << std::endl;
+            std::cout << "ERROR::Mariposa::innitSound::No se pudo cargar el sonido de disparo" << std::endl;
         }
         death.setBuffer(buffer);
     }
@@ -54,8 +54,8 @@ public:
     {
         death.play();
     }
-
-    Abeja(float posX = 0.f, float posY = 0.f)
+    
+    Mariposa(float posX = 0.f, float posY = 0.f)
     {
         this->innitVariables();
         this->innitTexture();
@@ -64,5 +64,5 @@ public:
 
         this->enemigo.setPosition(posX, posY);
     }
-    ~Abeja() {}
+    ~Mariposa() {}
 };
