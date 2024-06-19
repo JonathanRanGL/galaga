@@ -3,8 +3,9 @@
 
 ## **Creadores**
 ___
-Jonathan Rodrigo Sanchez Rangel
-Kenya Gabriela Frutos Gonzalez
+-Jonathan Rodrigo Sanchez Rangel
+
+-Kenya Gabriela Frutos Gonzalez
 
 ## **Objetivo**
 ___
@@ -16,7 +17,7 @@ ___
 
 ## **Descripción**
 ___
-Este proyecto consiste en una recreación del clásico juego Galaga (1981), implementado utilizando la biblioteca SFML para crear los gráficos y sonidos necesarios que aseguran una experiencia de juego agradable. En este juego, el jugador controla una nave espacial que se desplaza de izquierda a derecha, esquivando los proyectiles enemigos y disparándoles para eliminarlos.
+Este proyecto consiste en una recreación del clásico juego Galaga (1981), utilizando la biblioteca SFML para crear los gráficos y sonidos necesarios que aseguran una experiencia de juego agradable. En este juego, el jugador controla una nave espacial que se desplaza de izquierda a derecha, esquivando los proyectiles enemigos y disparándoles para eliminarlos.
 
 ## **Desarrollo**
 ___

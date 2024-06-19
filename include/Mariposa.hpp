@@ -32,7 +32,7 @@ public:
     {
         if (!this->texture.loadFromFile("./assets/images/mariposa/mariposa1.png"))
         {
-            std::cout << "ERROR::Nave::innitTexture::No se pudo cargar la textura de la nave" << std::endl;
+            std::cout << "ERROR::Mariposa::innitTexture::No se pudo cargar la textura de la mariposa" << std::endl;
         }
     }
 
