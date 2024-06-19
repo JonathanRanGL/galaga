@@ -34,9 +34,9 @@ ___
 * Disparo: Presiona la tecla de disparo para lanzar misiles y destruir a los enemigos.
 
 
-## **Demostracion**
+## **Demostración**
 ___
-[![](https://markdown-videos.deta.dev/youtube/HOU1MYvxhdw)](https://youtu.be/HOU1MYvxhdw)
+[![Video en YouTube](https://img.youtube.com/vi/HOU1MYvxhdw/0.jpg)](https://youtu.be/HOU1MYvxhdw)
 
 ## **Carpetas**
 ___
