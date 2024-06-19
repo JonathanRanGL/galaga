@@ -35,7 +35,7 @@ public:
     {
         if (!this->texture.loadFromFile("./assets/images/jefe/jefe1.png"))
         {
-            std::cout << "ERROR::Nave::innitTexture::No se pudo cargar la textura de la nave" << std::endl;
+            std::cout << "ERROR::Jefe::innitTexture::No se pudo cargar la textura del jefe" << std::endl;
         }
     }
 

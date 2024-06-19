@@ -33,7 +33,7 @@ public:
     {
         if (!this->texture.loadFromFile("./assets/images/abeja/abeja1.png"))
         {
-            std::cout << "ERROR::Nave::innitTexture::No se pudo cargar la textura de la nave" << std::endl;
+            std::cout << "ERROR::Abeja::innitTexture::No se pudo cargar la textura de la abeja" << std::endl;
         } 
     }
 
