@@ -330,7 +330,7 @@ public:
         this->window->display();
     }
 
-    void stageStartScreen()
+    void loadstageStartScreen()
     {
         /*
             La función encargada de mostrar la el incio de un nivel, en este caso únicamente se muestra la
@@ -357,7 +357,7 @@ public:
         std::this_thread::sleep_for(std::chrono::seconds(3));
     }
 
-    bool isType1Full()
+    bool checkType1Full()
     {
         /*
             En esta función se revisa si las casillas de la fila de enemigos tipo 1 (Jefe) están llenas, si todas las casillas
@@ -380,7 +380,7 @@ public:
         return this->type1Full;
     }
 
-    bool isType2Full()
+    bool checkType2Full()
     {
         /*
             En esta función se revisa si las casillas de la fila de enemigos tipo 2 (Mariposa) están llenas, si todas las casillas
@@ -403,7 +403,7 @@ public:
         return this->type2Full;
     }
 
-    bool isType3Full()
+    bool checkType3Full()
     {
         /*
             En esta función se revisa si las casillas de la fila de enemigos tipo 3 (Abeja) están llenas, si todas las casillas
@@ -453,7 +453,7 @@ public:
                 {
                     this->gameStarted = true;
                     this->introTone.stop();
-                    this->stageStartScreen();
+                    this->loadstageStartScreen();
                     this->introTone.stop();
                 }
                 break;
@@ -1131,7 +1131,7 @@ public:
         }
 
         // std::cout << timerToSpawn << std::endl;
-        if (firstEnemy == false && enemySorted[j] == 1 && !isType1Full() && this->typeToGenerate == 1)
+        if (firstEnemy == false && enemySorted[j] == 1 && !checkType1Full() && this->typeToGenerate == 1)
         {
             this->enemigosActivos.push_back(new Jefe(-10000.f, 10000.f));
             this->enemySorted.push_back(0);
@@ -1143,7 +1143,7 @@ public:
             this->timerToSpawn++;
         }
 
-        if (firstEnemy == false && enemySorted[j] == 1 && !isType2Full() && this->typeToGenerate == 2)
+        if (firstEnemy == false && enemySorted[j] == 1 && !checkType2Full() && this->typeToGenerate == 2)
         {
             this->enemigosActivos.push_back(new Mariposa(-10000.f, 10000.f));
             this->enemySorted.push_back(0);
@@ -1155,7 +1155,7 @@ public:
             this->timerToSpawn++;
         }
 
-        if (firstEnemy == false && enemySorted[j] == 1 && !isType3Full() && this->typeToGenerate == 3)
+        if (firstEnemy == false && enemySorted[j] == 1 && !checkType3Full() && this->typeToGenerate == 3)
         {
             this->enemigosActivos.push_back(new Abeja(-10000.f, 10000.f));
             this->enemySorted.push_back(0);
@@ -1196,21 +1196,21 @@ public:
         if (this->timerToSpawn >= this->timerToSpawnLimit)
         {
             typeToGenerate = rand() % 3 + 1;
-            if (this->typeToGenerate == 1 && !isType1Full())
+            if (this->typeToGenerate == 1 && !checkType1Full())
             {
                 this->enemigosActivos.push_back(new Jefe(-10000.f, 10000.f));
                 this->enemySorted.push_back(0);
                 this->readyToSort = false;
                 this->timerToSpawn = 0;
             }
-            if (this->typeToGenerate == 2 && !isType1Full())
+            if (this->typeToGenerate == 2 && !checkType2Full())
             {
                 this->enemigosActivos.push_back(new Mariposa(-10000.f, 10000.f));
                 this->enemySorted.push_back(0);
                 this->readyToSort = false;
                 this->timerToSpawn = 0;
             }
-            if (this->typeToGenerate == 3 && !isType1Full())
+            if (this->typeToGenerate == 3 && !checkType3Full())
             {
                 this->enemigosActivos.push_back(new Abeja(-10000.f, 10000.f));
                 this->enemySorted.push_back(0);

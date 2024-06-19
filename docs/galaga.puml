@@ -140,12 +140,6 @@ class Jefe
     + ~Jefe()
 }
 
-class Jugador
-{
-    Jugador()
-    ~Jugador()
-}
-
 class Mariposa
 {
     - sf::Texture texture
@@ -234,32 +228,38 @@ class Proyectil
 class Puntaje
 {
     - sf::Font font
-    - sf::Text puntajeText
-    - int puntaje
+    - sf::Text pointsText
+    - int points
+    - void innitVariables()
+    - void innitFont()
+    - void innitText()
 
-    + void aggPuntuacion (int puntos)
-    + void updateText()
-    + void updateText()
-
+    + void setPosition(float x, float y)
+    + void setTextColor(sf::Color color)
+    + void setTextSize(int size)
+    + void setText(std::stringstram ss)
+    + void render(sf::RenderTarget *target)
+    + void setPuntaje(int p)
+    + int getPuntaje()
+    + void increasePoints(int enemyValue)
+    
     + Puntaje()
     + ~Puntaje()
 }
 
-
-Game  "1" *-- "1" Jugador
-
-Jugador "1" *-- "3" Vida
 Nave "1" o-- "*" Proyectil
 Enemigo "1" o-- "*" Proyectil
-Jugador "1" *-- "1" Puntaje
+Abeja "1" --> "*" Enemigo
+Mariposa "1" --> "*" Enemigo
+Jefe "1" --> "*" Enemigo
 
-Alien --|> Enemigo
-Jefe --|> Alien
-Abeja --|> Alien
-Mariposa --|> Alien
+Game "1" o-- "1" Nave
+Game "1" o-- "*" Abeja
+Game "1" o-- "*" Mariposa
+Game "1" o-- "*" Jefe
+Game "1" o-- "1" Puntaje
 
-Proyectil o-- Colisionable
-Enemigo --|> Colisionable
-Nave --|> Colisionable
+
+
 
 @enduml
