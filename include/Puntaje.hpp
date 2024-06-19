@@ -10,7 +10,6 @@
 class Puntaje
 {
 private:
-    
     sf::Font font;
     sf::Text pointsText;
 
@@ -36,8 +35,7 @@ private:
     }
 
 public:
-    
-    //Setters
+    // Setters
     void setPosition(float x, float y)
     {
         this->pointsText.setPosition(x, y);
@@ -57,24 +55,23 @@ public:
     {
         this->pointsText.setString(ss.str());
     }
-    
 
     void render(sf::RenderTarget *target)
     {
         target->draw(this->pointsText);
     }
-    
+
     void setPuntaje(int p)
     {
         points = p;
     }
 
-    //Getters
+    // Getters
     int getPuntaje()
     {
         return points;
     }
-    
+
     // Funciones
     void increasePoints(int enemyVlaue)
     {

@@ -23,7 +23,6 @@ class Game
 {
 private:
     // Variables
-
     bool endGame;
 
     bool firstEnemy;
@@ -80,21 +79,21 @@ private:
 
     bool gameStarted;
 
-    //Background
+    // Background
     sf::Texture backgroundTexture;
     sf::Sprite background;
 
-    //Puntaje
+    // Puntaje
 
     Puntaje *puntaje;
-    
+
     // Window
 
     sf::RenderWindow *window;
     sf::VideoMode videoMode;
     sf::Event event;
 
-    //Audio
+    // Audio
     sf::SoundBuffer introBuffer;
     sf::Sound introTone;
 
@@ -106,13 +105,10 @@ private:
 
     int toneTimer;
     int toneTimerLimit;
-    
+
     // Objetos dentro del juego
 
     Nave *nave;
-
-    using EnemigosActivos = std::variant<Abeja *, Mariposa *, Jefe *>;
-    std::vector<EnemigosActivos> enemigosActivos;
 
     /*
     Se crea un vector de enemigos encargado de almacenar los datos de todos los enemigos activos.
@@ -120,6 +116,8 @@ private:
     hace con el proyectil de la nave que lo impactó y todos aquellos proyectiles que salen de la
     ventana.
     */
+    using EnemigosActivos = std::variant<Abeja *, Mariposa *, Jefe *>;
+    std::vector<EnemigosActivos> enemigosActivos;
 
     /*
     Este vector se encarga de almacenar un 1 o un 0 que indicará si el enemigo ha sido ordenado o no,
@@ -175,6 +173,12 @@ private:
 
     void initWindow()
     {
+        /*
+        Esta es la función de la creación de la ventana, se establecen criterios como su ancho, alto, título y estilo.
+        En esta función se establece también el límite de frames por segundo que se mostrarán en la ventana para evitar
+        problemas de screen tearing y se crea la ventana con los criterios establecidos.
+        */
+
         this->videoMode.height = 800;
         this->videoMode.width = 600;
 
@@ -236,6 +240,10 @@ public:
 
     const bool running() const
     {
+        /*
+        Esta función se encarga de retornar si la ventana está abierta o no, si la ventana está abierta,
+        el juego sigue corriendo, si la ventana se cierra, el juego termina, es usada en el main.
+        */
         return this->window->isOpen();
     }
 
@@ -262,6 +270,12 @@ public:
 
     void printPoints()
     {
+        /*
+        Esta función se encarga de imprimir el puntaje en la pantalla, se establece el tamaño de la fuente, el color
+        y la posición en la que se imprimirá el puntaje, se convierte el puntaje a string y se imprime en la pantalla
+        todo mediante un objeto de la clase Puntaje, que se encarga de manejar el puntaje del jugador además de otras
+        funciones relacionadas con el texto en pantalla.
+        */
         this->puntaje->setTextSize(20);
         this->puntaje->setTextColor(sf::Color::White);
         this->puntaje->setPosition(10.f, 10.f);
@@ -270,8 +284,17 @@ public:
 
     void loadStartScreen()
     {
+        /*
+            Esta función se encarga de cargar la pantalla de inicio del juego, en esta pantalla se muestra el título del juego
+            y un mensaje que indica al jugador que presione ENTER para comenzar el juego, además de los registros de los integrantes
+            del equipo.
+
+            La función está constantemente llamando a pollEvents que se encarga de entre otras cosas, revisar si el usuario ha presionado
+            la tecla ENTER, si esto sucede.
+        */
+
         this->window->clear();
-        
+
         this->renderGameBackground();
 
         this->puntaje->setTextSize(30);
@@ -294,7 +317,7 @@ public:
 
         this->pollEvents();
 
-        if(this->toneTimer == 0)
+        if (this->toneTimer == 0)
         {
             this->introTone.play();
             this->toneTimer = this->toneTimerLimit;
@@ -305,14 +328,21 @@ public:
         }
 
         this->window->display();
-    
     }
 
     void stageStartScreen()
     {
+        /*
+            La función encargada de mostrar la el incio de un nivel, en este caso únicamente se muestra la
+            leyenda "Stage inf." en la pantalla, representando el comienzo de una etapa infinita, ya que
+            debido a la manera en la que el juego está programado, nunca dejarán de aparecer enemigos en
+            pantalla mientras el jugador siga con vida.
 
+            En esta función se implementó un temporizador de 3 segundos para que el jugador pueda leer el mensaje,
+            el juego no comience de inmediato y el tono de inicio de etapa pueda reproducirse sin interrupciones.
+        */
         this->stageStartTone.play();
-        
+
         this->window->clear();
         this->renderGameBackground();
         this->puntaje->setTextSize(16);
@@ -323,12 +353,17 @@ public:
 
         this->printPoints();
         this->window->display();
-        
+
         std::this_thread::sleep_for(std::chrono::seconds(3));
     }
 
     bool isType1Full()
     {
+        /*
+            En esta función se revisa si las casillas de la fila de enemigos tipo 1 (Jefe) están llenas, si todas las casillas
+            están llenas, se establece la variable type1Full en true y se retorna, si no, se establece en false y también es retornada.
+        */
+
         for (int i = 0; i < 8; i++)
         {
             if (this->slotStateType1[i] == false)
@@ -347,6 +382,11 @@ public:
 
     bool isType2Full()
     {
+        /*
+            En esta función se revisa si las casillas de la fila de enemigos tipo 2 (Mariposa) están llenas, si todas las casillas
+            están llenas, se establece la variable type2Full en true y se retorna, si no, se establece en false y también es retornada.
+        */
+
         for (int i = 0; i < 8; i++)
         {
             if (this->slotStateType2R1[i] == false || this->slotStateType2R2[i] == false)
@@ -365,6 +405,11 @@ public:
 
     bool isType3Full()
     {
+        /*
+            En esta función se revisa si las casillas de la fila de enemigos tipo 3 (Abeja) están llenas, si todas las casillas
+            están llenas, se establece la variable type3Full en true y se retorna, si no, se establece en false y también es retornada.
+        */
+
         for (int i = 0; i < 8; i++)
         {
             if (this->slotStateType3R1[i] == false || this->slotStateType3R2[i] == false)
@@ -383,6 +428,14 @@ public:
 
     void pollEvents()
     {
+        /*
+            Esta función se encarga de revisar si ocurre algún evento relacionado a la ventana, por ejemplo,
+            si el usuario presiona el botón de cerrar la ventana, la ventana se cerrará lo que terminará el
+            juego, lo mismo sucede con la tecla ESC en el teclado. Sin embargo, la función pollEvents también
+            se encarga de revisar si el usuario presiona la tecla ENTER, lo que en la pantalla de inicio, dará
+            inicio al juego.
+        */
+
         while (this->window->pollEvent(this->event)) // Revisa si en la ventana ocurre un evento
         {
             switch (this->event.type) // Determina la acción segun que evento suceda
@@ -391,8 +444,8 @@ public:
                 this->window->close();
                 break;
 
-            case sf::Event::KeyPressed: // Cerrar ventana si se presiona ESC en el teclado
-                if (this->event.key.code == sf::Keyboard::Escape)
+            case sf::Event::KeyPressed:
+                if (this->event.key.code == sf::Keyboard::Escape) // Cerrar ventana si se presiona ESC en el teclado
                 {
                     this->window->close();
                 }
@@ -408,15 +461,23 @@ public:
         }
     }
 
-    bool runTrajectoryGen2(int i) // Trayectoria 2 para enemigos.
+    bool runTrajectoryGen2(int i)
     {
-        
+        /*
+            Esta función se encarga de dar la secuencia de movimientos que un enemigo cualquiera tendría que seguir
+            para completar la trayectoria de aparición en pantalla, en este caso, la trayectoria 2. Durante la función
+            se verifica la posición del enemigo respecto a las posiciones deseadas en cada paso, de la misma forma se
+            asegura de que el enemigo mantenga una correcta secuencia de pasos y por ende, de movimientos.
+            Al finalizar la secuencia de movimientos, se prepara al enemigo para ser ordenado en pantalla, asignando a
+            la variable readyToSort el valor de true.
+        */
+
         // Establece la posición inicial del enemigo antes de aparecer en la pantalla
         if (this->moveStep == -1.f)
         {
             std::visit([](const auto &arg)
                        { arg->setToXY(250.f, -40.f); }, enemigosActivos[i]);
-            
+
             this->moveStep = 0.f;
             this->isSorted = false;
         }
@@ -426,12 +487,12 @@ public:
 
         int VY = std::visit([](const auto &arg)
                             { return arg->getYPos(); }, enemigosActivos[i]);
-                            
+
         // Primer movimiento
         if (VY < 100 && this->moveStep == 0.f)
         {
             std::visit([](const auto &arg)
-                       { arg->moveDown(); }, enemigosActivos[i]);          
+                       { arg->moveDown(); }, enemigosActivos[i]);
         }
         else if (this->moveStep == 0.f)
         {
@@ -441,7 +502,7 @@ public:
         // Segundo movimiento
         if (VX > 150.f && this->moveStep == 1.f)
         {
-            //this->enemigos[i]->moveDiagDownLeft(1.5, 1.f);
+            // this->enemigos[i]->moveDiagDownLeft(1.5, 1.f);
             std::visit([](const auto &arg)
                        { arg->moveDiagDownLeft(1.5, 1.f); }, enemigosActivos[i]);
         }
@@ -453,7 +514,7 @@ public:
         // Tercer movimiento
         if (VX > 60.f && this->moveStep == 2.f)
         {
-            //this->enemigos[i]->moveDiagDownLeft(1, 1.5);
+            // this->enemigos[i]->moveDiagDownLeft(1, 1.5);
             std::visit([](const auto &arg)
                        { arg->moveDiagDownLeft(1, 1.5); }, enemigosActivos[i]);
         }
@@ -465,7 +526,7 @@ public:
         // Cuarto movimiento
         if (VY < 380.f && this->moveStep == 3.f)
         {
-            //this->enemigos[i]->moveDown();
+            // this->enemigos[i]->moveDown();
             std::visit([](const auto &arg)
                        { arg->moveDown(); }, enemigosActivos[i]);
         }
@@ -477,7 +538,7 @@ public:
         // Quinto movimiento
         if (VX < 150.f && this->moveStep == 4.f)
         {
-            //this->enemigos[i]->moveDiagDownRight(1.3, 0.8);
+            // this->enemigos[i]->moveDiagDownRight(1.3, 0.8);
             std::visit([](const auto &arg)
                        { arg->moveDiagDownRight(1.3, 0.8); }, enemigosActivos[i]);
         }
@@ -489,7 +550,7 @@ public:
         // Sexto movimiento
         if (VX < 250.f && this->moveStep == 5.f)
         {
-            //this->enemigos[i]->moveDiagUpRight(1.3, 0.8);
+            // this->enemigos[i]->moveDiagUpRight(1.3, 0.8);
             std::visit([](const auto &arg)
                        { arg->moveDiagUpRight(1.3, 0.8); }, enemigosActivos[i]);
         }
@@ -501,7 +562,7 @@ public:
         // Séptimo movimiento
         if (VY > 360.f && this->moveStep == 6.f)
         {
-            //this->enemigos[i]->moveUp();
+            // this->enemigos[i]->moveUp();
             std::visit([](const auto &arg)
                        { arg->moveUp(); }, enemigosActivos[i]);
         }
@@ -523,9 +584,19 @@ public:
         }
         return readyToSort;
     }
-    
-    bool runTrajectoryGen1(int i) // Trayectoria 1 para enemigos.
+
+    bool runTrajectoryGen1(int i)
     {
+
+        /*
+            Esta función se encarga de dar la secuencia de movimientos que un enemigo cualquiera tendría que seguir
+            para completar la trayectoria de aparición en pantalla, en este caso, la trayectoria 1. Durante la función
+            se verifica la posición del enemigo respecto a las posiciones deseadas en cada paso, de la misma forma se
+            asegura de que el enemigo mantenga una correcta secuencia de pasos y por ende, de movimientos.
+            Al finalizar la secuencia de movimientos, se prepara al enemigo para ser ordenado en pantalla, asignando a
+            la variable readyToSort el valor de true.
+        */
+
         int VX = std::visit([](const auto &arg)
                             { return arg->getXPos(); }, enemigosActivos[i]);
 
@@ -858,12 +929,22 @@ public:
 
     void checkForHits()
     {
-        for (int i = 0; i < this->enemigosActivos.size(); i++)
+        /*
+            Esta es una de las funciones más importantes del juego, se encarga de revisar si un proyectil de la nave
+            colisiona con un enemigo, si esto sucede, se elimina el proyectil de su correspondiente vector así como
+            al enemigo del vector de enemigos activos, se suma el puntaje correspondiente al enemigo y en caso de que
+            este estuviera acomodado en una de sus correspondientes celdas, esta es liberada para permitir que otro
+            enemigo pueda ocuparla.
+        */
+
+        for (int i = 0; i < this->enemigosActivos.size(); i++) // Primero se revisa uno por uno para cada enemigo activo
         {
+
             bool enemigoEliminado = false;
-            for (size_t k = 0; k < nave->getProyectilesSize() && !enemigoEliminado; k++)
+            for (size_t k = 0; k < nave->getProyectilesSize() && !enemigoEliminado; k++) // Se revisa por cada proyectil de la nave
             {
 
+                // Se detecta si uno de estos proyectiles intersecta con un enemigo
                 if (nave->getProyectilesBounds(k).intersects(
                         std::visit([](const auto &arg)
                                    { return arg->getBounds(); }, enemigosActivos[i])))
@@ -879,8 +960,7 @@ public:
 
                     int hitCount = std::visit([](const auto &arg)
                                               { return arg->getHitCount(); }, enemigosActivos[i]);
-                    
-                    
+
                     if (this->type == 1 && hitCount == 0)
                     {
                         std::visit([](const auto &arg)
@@ -893,19 +973,19 @@ public:
                     }
                     else
                     {
-                        if(this->type == 1)
+                        if (this->type == 1)
                         {
                             this->puntaje->increasePoints(type1Value);
                         }
-                        else if(this->type == 2)
+                        else if (this->type == 2)
                         {
                             this->puntaje->increasePoints(type2Value);
                         }
-                        else if(this->type == 3)
+                        else if (this->type == 3)
                         {
                             this->puntaje->increasePoints(type3Value);
                         }
-                        
+
                         std::visit([](const auto &arg)
                                    { arg->playDeathSound(); }, enemigosActivos[i]);
 
@@ -970,7 +1050,7 @@ public:
                             }
                             this->slotReseted = false;
                         }
-
+                        // Se elimina el enemigo y proyectil correspondientes
                         nave->deleteProyectil(k);
                         this->enemigosActivos.erase(this->enemigosActivos.begin() + i);
 
@@ -1039,7 +1119,6 @@ public:
                 {
                     runTrajectoryGen2(i);
                 }
-                
             }
 
             if (this->readyToSort == true && this->enemySorted[i] == 0)
@@ -1233,8 +1312,14 @@ public:
     }
 
     void update()
-    {        
-        if(gameStarted == true)
+    {
+        /*
+            Esta función se encarga de actualizar todos los eventos que ocurran en el juego previo a ser renderizados.
+            Se ejecuta solo si el juego ha sido iniciado (el usuario ha presionado la tecla ENTER en la pantalla de
+            inicio).
+        */
+
+        if (gameStarted == true)
         {
             // Actualiza los eventos de la ventana
             this->pollEvents();
@@ -1249,13 +1334,13 @@ public:
             for (int i = 0; i < this->enemigosActivos.size(); i++)
             {
                 std::visit([this](const auto &arg)
-                        { arg->update(); }, enemigosActivos[i]);
+                           { arg->update(); }, enemigosActivos[i]);
             }
 
             // Actualiza el puntaje
             this->printPoints();
         }
-        else if(this->gameStarted == false)
+        else if (this->gameStarted == false)
         {
             this->loadStartScreen();
         }
@@ -1263,7 +1348,7 @@ public:
 
     void render()
     {
-        if(gameStarted == true) // Solo comienza a renderizar si el juego ha comenzado (Se presionó la tecla ENTER)
+        if (gameStarted == true) // Solo comienza a renderizar si el juego ha comenzado (Se presionó la tecla ENTER)
         {
             /*
                 Muestra en la ventana del juego todos los elementos
@@ -1281,13 +1366,13 @@ public:
             this->renderGameBackground();
 
             this->puntaje->render(this->window);
-            
+
             this->nave->render(this->window);
 
             for (int i = 0; i < this->enemigosActivos.size(); i++)
             {
                 std::visit([this](const auto &arg)
-                        { arg->render(this->window); }, enemigosActivos[i]);
+                           { arg->render(this->window); }, enemigosActivos[i]);
             }
 
             // Una vez dibujados los elementos, se muestra la ventana (Equivale a 1 frame)

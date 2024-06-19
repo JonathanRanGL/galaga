@@ -11,6 +11,13 @@ class Nave
 {
 private:
     // Variables
+
+    double speed;
+    float shootCooldown;
+    float shootCooldownLimit;
+    int remainingLives;
+
+    // Sonido
     sf::Sprite nave;
     sf::Texture texture;
 
@@ -22,11 +29,6 @@ private:
 
     sf::SoundBuffer bufferRespawn;
     sf::Sound respawn;
-
-    double speed;
-    float shootCooldown;
-    float shootCooldownLimit;
-    int remainingLives;
 
     std::vector<Proyectil *> proyectiles; // Vector que almacena los punteros hacia los proyectiles
 

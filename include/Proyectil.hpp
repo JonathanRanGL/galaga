@@ -15,7 +15,6 @@ private:
 
 public:
     // Funciones
-
     void innitVariables()
     {
         this->muzzleVelocity = 7.f;
@@ -44,14 +43,14 @@ public:
         return this->proyectil.getGlobalBounds();
     }
 
-    //Setters
+    // Setters
 
     void setColor(sf::Color color)
     {
         this->proyectil.setFillColor(color);
     }
 
-    //Constructor y destructor
+    // Constructor y destructor
 
     Proyectil(float dirX, float dirY, float posX, float posY)
     {

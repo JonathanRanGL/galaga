@@ -215,7 +215,7 @@ public:
         return this->tipo;
     }
 
-    //Setters
+    // Setters
     void setProjectilesColor(sf::Color color)
     {
         for (auto *proyectil : this->proyectiles)
@@ -241,6 +241,10 @@ public:
     }
     ~Enemigo()
     {
-
+        // Eliminación de los proyectiles
+        for (auto *i : this->proyectiles)
+        {
+            delete i;
+        }
     }
 };
