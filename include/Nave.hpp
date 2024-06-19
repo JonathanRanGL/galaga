@@ -17,9 +17,16 @@ private:
     sf::SoundBuffer buffer;
     sf::Sound disparo;
 
+    sf::SoundBuffer bufferHit;
+    sf::Sound hit;
+
+    sf::SoundBuffer bufferRespawn;
+    sf::Sound respawn;
+
     double speed;
     float shootCooldown;
     float shootCooldownLimit;
+    int remainingLives;
 
     std::vector<Proyectil *> proyectiles; // Vector que almacena los punteros hacia los proyectiles
 
@@ -29,7 +36,7 @@ public:
     void innitTexture()
     {
         // Cargar la textura de la nave
-        if (!this->texture.loadFromFile("./assets/images/nave.png"))
+        if (!this->texture.loadFromFile("./assets/images/nave/nave.png"))
         {
             std::cout << "ERROR::Nave::innitTexture::No se pudo cargar la textura de la nave" << std::endl;
         }
@@ -52,10 +59,25 @@ public:
             std::cout << "ERROR::Nave::innitSound::No se pudo cargar el sonido de disparo" << std::endl;
         }
         disparo.setBuffer(buffer);
+
+        // Cargar el sonido para cada colisión de la nave
+        if (!this->bufferHit.loadFromFile("./assets/music/DestruccionNave.wav"))
+        {
+            std::cout << "ERROR::Nave::innitSound::No se pudo cargar el sonido de colisión" << std::endl;
+        }
+        hit.setBuffer(bufferHit);
+
+        // Cargar el sonido para cada respawn de la nave
+        if (!this->bufferRespawn.loadFromFile("./assets/music/Reaparecer.wav"))
+        {
+            std::cout << "ERROR::Nave::innitSound::No se pudo cargar el sonido de respawn" << std::endl;
+        }
+        respawn.setBuffer(bufferRespawn);
     }
 
     void innitVariables()
     {
+        this->remainingLives = 3;
         this->speed = 2.f;
         this->shootCooldownLimit = 60.f;
         this->shootCooldown = this->shootCooldownLimit;
@@ -241,6 +263,95 @@ public:
         de la nave, su utilidad radica en que puede ser llamada por fuera de la clase Nave.
         */
         return this->nave.getGlobalBounds();
+    }
+
+    void playDestroyedSound()
+    {
+        this->hit.play();
+    }
+
+    void playRespawnSound()
+    {
+        this->respawn.play();
+    }
+
+    //Setters
+    
+    void resetPosition()
+    {
+        this->nave.setPosition(300.f - ((this->nave.getGlobalBounds().width) / 2), 700.f);
+    }
+    
+    int takeHit()
+    {   
+        remainingLives--;
+        return this->remainingLives;
+    }
+
+    void setDefaultTexture()
+    {
+        if (!this->texture.loadFromFile("./assets/images/nave/nave.png"))
+        {
+            std::cout << "ERROR::Nave::innitTexture::No se pudo cargar la textura de la nave" << std::endl;
+        }
+
+        this->nave.setTexture(this->texture);
+        this->nave.scale(1, 1);
+    }
+
+    void setDestroyedTexture1()
+    {
+        if (!this->texture.loadFromFile("./assets/images/nave/naveDestruida1.png"))
+        {
+            std::cout << "ERROR::Nave::innitTexture::No se pudo cargar la textura de la nave" << std::endl;
+        }
+
+        this->nave.setTexture(this->texture);
+        this->nave.scale(1, 1);
+    }
+
+    void setDestroyedTexture2()
+    {
+        if (!this->texture.loadFromFile("./assets/images/nave/naveDestruida2.png"))
+        {
+            std::cout << "ERROR::Nave::innitTexture::No se pudo cargar la textura de la nave" << std::endl;
+        }
+
+        this->nave.setTexture(this->texture);
+        this->nave.scale(1, 1);
+    }
+
+    void setDestroyedTexture3()
+    {
+        if (!this->texture.loadFromFile("./assets/images/nave/naveDestruida3.png"))
+        {
+            std::cout << "ERROR::Nave::innitTexture::No se pudo cargar la textura de la nave" << std::endl;
+        }
+
+        this->nave.setTexture(this->texture);
+        this->nave.scale(1, 1);
+    }
+
+    void setDestroyedTexture4()
+    {
+        if (!this->texture.loadFromFile("./assets/images/nave/naveDestruida4.png"))
+        {
+            std::cout << "ERROR::Nave::innitTexture::No se pudo cargar la textura de la nave" << std::endl;
+        }
+
+        this->nave.setTexture(this->texture);
+        this->nave.scale(1, 1);
+    }
+
+    void setDestroyedTexture5()
+    {
+        if (!this->texture.loadFromFile("./assets/images/nave/nothing.png"))
+        {
+            std::cout << "ERROR::Nave::innitTexture::No se pudo cargar la textura de la nave" << std::endl;
+        }
+
+        this->nave.setTexture(this->texture);
+        this->nave.scale(1, 1);
     }
 
     // Constructor y Destructor

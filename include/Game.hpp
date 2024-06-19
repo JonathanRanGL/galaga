@@ -994,7 +994,11 @@ public:
         //Actualiza la nave
         this->nave->update(this->window);
 
-        //Revisa si uno de los proyectiles enemigos impacta con la nave
+        /*
+        En este segmento de updateNave se revisa uno por uno los proyectiles que cada enemigo ha disparado
+        para detectar si uno de ellos impacta con la nave (es decir sus hitboxes se intersectan), si este
+        es el caso, se elimina dicho proyectil enemigo y...
+        */
         for(int i = 0 ; i < this->enemigosActivos.size(); i++)
         {
             int proyectilesEnemigosActivos = std::visit([](const auto& arg){
@@ -1013,8 +1017,45 @@ public:
                         arg->deleteProyectil(k);
                     }, enemigosActivos[i]);
 
-                    delete this->nave;
-                    this->endGame = true;
+                    this->nave->playDestroyedSound();
+
+                    for(int i = 0; i <= 400 ; i++)
+                    {
+                        if(i <= 40)
+                        {
+                            this->nave->setDestroyedTexture1();
+                        }
+                        else if(i <= 80)
+                        {
+                            this->nave->setDestroyedTexture2();
+                        }
+                        else if(i <= 120)
+                        {
+                            this->nave->setDestroyedTexture3();
+                        }
+                        else if(i <= 160)
+                        {
+                            this->nave->setDestroyedTexture4();
+                        }
+                        else if(i <= 400)
+                        {
+                            this->nave->setDestroyedTexture5();
+                        }
+                        this->nave->render(this->window);
+                        this->window->display();
+                    }
+                    
+                    if(this->nave->takeHit() == 0)
+                    {
+                        this->endGame = true;
+                    }
+                    else
+                    {
+                        this->nave->setDefaultTexture();
+                        this->nave->playRespawnSound();
+                        this->nave->resetPosition();
+                    }
+                    
                 }
             }
         }
