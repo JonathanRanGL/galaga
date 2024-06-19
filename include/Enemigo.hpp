@@ -29,29 +29,6 @@ public:
         this->tipo = rand() % 3 + 1; // Genera un tipo de enemigo aleatorio (1, 2 o 3)
     }
 
-    void innitShape()
-    {
-        /*
-        FUNCION TEMPORAL, SE CAMBIARÁ A UN SPRITE EN EL FUTURO
-        */
-        /*
-         this->enemigo.setSize(sf::Vector2f(40.f, 40.f));
-
-         switch (this->tipo)
-         {
-         case 1:
-             this->enemigo.setFillColor(sf::Color::Magenta);
-             break;
-         case 2:
-             this->enemigo.setFillColor(sf::Color::Blue);
-             break;
-         case 3:
-             this->enemigo.setFillColor(sf::Color::Yellow);
-             break;
-         }
-         */
-    }
-
     // ------------------------------------------------------------------------------------------------------------------------------------
 
     /*
@@ -205,7 +182,7 @@ public:
         target->draw(this->enemigo);
     }
 
-    // Accesores
+    // Getters
     float getSpeed()
     {
         /*
@@ -238,6 +215,15 @@ public:
         return this->tipo;
     }
 
+    //Setters
+    void setProjectilesColor(sf::Color color)
+    {
+        for (auto *proyectil : this->proyectiles)
+        {
+            proyectil->setColor(color);
+        }
+    }
+
     const sf::FloatRect getBounds() const
     {
         /*
@@ -251,9 +237,10 @@ public:
     Enemigo(float posX = 0.f, float posY = 0.f)
     {
         this->innitVariables();
-        this->innitShape();
-
         this->enemigo.setPosition(posX, posY);
     }
-    ~Enemigo() {}
+    ~Enemigo()
+    {
+
+    }
 };

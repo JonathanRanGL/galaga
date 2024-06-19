@@ -8,6 +8,8 @@
 #include <cmath>
 #include <vector>
 #include <variant>
+#include <thread>
+#include <chrono>
 
 #include <Nave.hpp>
 #include <Proyectil.hpp>
@@ -15,6 +17,7 @@
 #include <Abeja.hpp>
 #include <Mariposa.hpp>
 #include <Jefe.hpp>
+#include <Puntaje.hpp>
 
 class Game
 {
@@ -71,12 +74,39 @@ private:
     int enemyShootingInterval;
     int enemyShootingIntervalLimit;
 
+    int type1Value;
+    int type2Value;
+    int type3Value;
+
+    bool gameStarted;
+
+    //Background
+    sf::Texture backgroundTexture;
+    sf::Sprite background;
+
+    //Puntaje
+
+    Puntaje *puntaje;
+    
     // Window
 
     sf::RenderWindow *window;
     sf::VideoMode videoMode;
     sf::Event event;
 
+    //Audio
+    sf::SoundBuffer introBuffer;
+    sf::Sound introTone;
+
+    sf::SoundBuffer stageStartBuffer;
+    sf::Sound stageStartTone;
+
+    sf::SoundBuffer gameOverBuffer;
+    sf::Sound gameOverTone;
+
+    int toneTimer;
+    int toneTimerLimit;
+    
     // Objetos dentro del juego
 
     Nave *nave;
@@ -133,6 +163,14 @@ private:
         this->randEnemy = 0;
         this->enemyShootingInterval = 0;
         this->enemyShootingIntervalLimit = 100;
+
+        this->type1Value = 400;
+        this->type2Value = 200;
+        this->type3Value = 100;
+
+        this->gameStarted = false;
+        this->toneTimer = 0;
+        this->toneTimerLimit = 4000;
     }
 
     void initWindow()
@@ -148,15 +186,40 @@ private:
     void initEntities()
     {
         this->nave = new Nave();
+
+        this->puntaje = new Puntaje();
+    }
+
+    void innitGameSound()
+    {
+        if (!this->introBuffer.loadFromFile("./assets/music/intro.wav"))
+        {
+            std::cout << "ERROR::Game::innitGameSound::No se pudo cargar el sonido de inicio" << std::endl;
+        }
+        introTone.setBuffer(introBuffer);
+
+        if (!this->stageStartBuffer.loadFromFile("./assets/music/inicioetapaD.wav"))
+        {
+            std::cout << "ERROR::Game::innitGameSound::No se pudo cargar el sonido de inicio de nivel" << std::endl;
+        }
+        stageStartTone.setBuffer(stageStartBuffer);
+
+        if (!this->gameOverBuffer.loadFromFile("./assets/music/finetapaD.wav"))
+        {
+            std::cout << "ERROR::Game::innitGameSound::No se pudo cargar el sonido de fin de juego" << std::endl;
+        }
+        gameOverTone.setBuffer(gameOverBuffer);
     }
 
 public:
     // Constructor y Destructor
     Game(/* args */)
     {
+        this->innitGameBackground();
         this->initVariables();
         this->initWindow();
         this->initEntities();
+        this->innitGameSound();
     }
 
     ~Game()
@@ -182,6 +245,87 @@ public:
     }
 
     // Funciones
+
+    void innitGameBackground()
+    {
+        if (!this->backgroundTexture.loadFromFile("./assets/images/background/background.png"))
+        {
+            std::cout << "ERROR::Game::innitGameBackground::No se pudo cargar la textura del fondo" << std::endl;
+        }
+        this->background.setTexture(this->backgroundTexture);
+    }
+
+    void renderGameBackground()
+    {
+        this->window->draw(this->background);
+    }
+
+    void printPoints()
+    {
+        this->puntaje->setTextSize(20);
+        this->puntaje->setTextColor(sf::Color::White);
+        this->puntaje->setPosition(10.f, 10.f);
+        this->puntaje->setText(std::stringstream() << this->puntaje->getPuntaje());
+    }
+
+    void loadStartScreen()
+    {
+        this->window->clear();
+        
+        this->renderGameBackground();
+
+        this->puntaje->setTextSize(30);
+        this->puntaje->setTextColor(sf::Color::Cyan);
+        this->puntaje->setPosition(210.f, 100.f);
+        this->puntaje->setText(std::stringstream() << "GALAGA");
+        this->puntaje->render(this->window);
+
+        this->puntaje->setTextSize(14);
+        this->puntaje->setTextColor(sf::Color::Red);
+        this->puntaje->setPosition(160.f, 380.f);
+        this->puntaje->setText(std::stringstream() << "Press ENTER to start");
+        this->puntaje->render(this->window);
+
+        this->puntaje->setTextSize(10);
+        this->puntaje->setTextColor(sf::Color::White);
+        this->puntaje->setPosition(220.f, 780.f);
+        this->puntaje->setText(std::stringstream() << "23110179 - 23110115");
+        this->puntaje->render(this->window);
+
+        this->pollEvents();
+
+        if(this->toneTimer == 0)
+        {
+            this->introTone.play();
+            this->toneTimer = this->toneTimerLimit;
+        }
+        else
+        {
+            this->toneTimer--;
+        }
+
+        this->window->display();
+    
+    }
+
+    void stageStartScreen()
+    {
+
+        this->stageStartTone.play();
+        
+        this->window->clear();
+        this->renderGameBackground();
+        this->puntaje->setTextSize(16);
+        this->puntaje->setTextColor(sf::Color::Cyan);
+        this->puntaje->setPosition(225.f, 250.f);
+        this->puntaje->setText(std::stringstream() << "Stage inf.");
+        this->puntaje->render(this->window);
+
+        this->printPoints();
+        this->window->display();
+        
+        std::this_thread::sleep_for(std::chrono::seconds(3));
+    }
 
     bool isType1Full()
     {
@@ -252,25 +396,42 @@ public:
                 {
                     this->window->close();
                 }
+                else if (this->event.key.code == sf::Keyboard::Enter && !this->gameStarted)
+                {
+                    this->gameStarted = true;
+                    this->introTone.stop();
+                    this->stageStartScreen();
+                    this->introTone.stop();
+                }
                 break;
             }
         }
     }
 
-    /*
-    bool trajectoryE2(int i) // Trayectoria 2 para enemigos.
+    bool runTrajectoryGen2(int i) // Trayectoria 2 para enemigos.
     {
+        
         // Establece la posición inicial del enemigo antes de aparecer en la pantalla
         if (this->moveStep == -1.f)
         {
-            this->enemigos[i]->setToXY(250.f, -40.f);
+            std::visit([](const auto &arg)
+                       { arg->setToXY(250.f, -40.f); }, enemigosActivos[i]);
+            
             this->moveStep = 0.f;
+            this->isSorted = false;
         }
 
+        int VX = std::visit([](const auto &arg)
+                            { return arg->getXPos(); }, enemigosActivos[i]);
+
+        int VY = std::visit([](const auto &arg)
+                            { return arg->getYPos(); }, enemigosActivos[i]);
+                            
         // Primer movimiento
-        if (this->enemigos[i]->getYPos() < 100.f && this->moveStep == 0.f)
+        if (VY < 100 && this->moveStep == 0.f)
         {
-            this->enemigos[i]->moveDown();
+            std::visit([](const auto &arg)
+                       { arg->moveDown(); }, enemigosActivos[i]);          
         }
         else if (this->moveStep == 0.f)
         {
@@ -278,9 +439,11 @@ public:
         }
 
         // Segundo movimiento
-        if (this->enemigos[i]->getXPos() > 150.f && this->moveStep == 1.f)
+        if (VX > 150.f && this->moveStep == 1.f)
         {
-            this->enemigos[i]->moveDiagDownLeft(1.5, 1.f);
+            //this->enemigos[i]->moveDiagDownLeft(1.5, 1.f);
+            std::visit([](const auto &arg)
+                       { arg->moveDiagDownLeft(1.5, 1.f); }, enemigosActivos[i]);
         }
         else if (this->moveStep == 1.f)
         {
@@ -288,9 +451,11 @@ public:
         }
 
         // Tercer movimiento
-        if (this->enemigos[i]->getXPos() > 60.f && this->moveStep == 2.f)
+        if (VX > 60.f && this->moveStep == 2.f)
         {
-            this->enemigos[i]->moveDiagDownLeft(1, 1.5);
+            //this->enemigos[i]->moveDiagDownLeft(1, 1.5);
+            std::visit([](const auto &arg)
+                       { arg->moveDiagDownLeft(1, 1.5); }, enemigosActivos[i]);
         }
         else if (this->moveStep == 2.f)
         {
@@ -298,9 +463,11 @@ public:
         }
 
         // Cuarto movimiento
-        if (this->enemigos[i]->getYPos() < 380.f && this->moveStep == 3.f)
+        if (VY < 380.f && this->moveStep == 3.f)
         {
-            this->enemigos[i]->moveDown();
+            //this->enemigos[i]->moveDown();
+            std::visit([](const auto &arg)
+                       { arg->moveDown(); }, enemigosActivos[i]);
         }
         else if (this->moveStep == 3.f)
         {
@@ -308,9 +475,11 @@ public:
         }
 
         // Quinto movimiento
-        if (this->enemigos[i]->getXPos() < 150.f && this->moveStep == 4.f)
+        if (VX < 150.f && this->moveStep == 4.f)
         {
-            this->enemigos[i]->moveDiagDownRight(1.3, 0.8);
+            //this->enemigos[i]->moveDiagDownRight(1.3, 0.8);
+            std::visit([](const auto &arg)
+                       { arg->moveDiagDownRight(1.3, 0.8); }, enemigosActivos[i]);
         }
         else if (this->moveStep == 4.f)
         {
@@ -318,9 +487,11 @@ public:
         }
 
         // Sexto movimiento
-        if (this->enemigos[i]->getXPos() < 250.f && this->moveStep == 5.f)
+        if (VX < 250.f && this->moveStep == 5.f)
         {
-            this->enemigos[i]->moveDiagUpRight(1.3, 0.8);
+            //this->enemigos[i]->moveDiagUpRight(1.3, 0.8);
+            std::visit([](const auto &arg)
+                       { arg->moveDiagUpRight(1.3, 0.8); }, enemigosActivos[i]);
         }
         else if (this->moveStep == 5.f)
         {
@@ -328,9 +499,11 @@ public:
         }
 
         // Séptimo movimiento
-        if (this->enemigos[i]->getYPos() > 360.f && this->moveStep == 6.f)
+        if (VY > 360.f && this->moveStep == 6.f)
         {
-            this->enemigos[i]->moveUp();
+            //this->enemigos[i]->moveUp();
+            std::visit([](const auto &arg)
+                       { arg->moveUp(); }, enemigosActivos[i]);
         }
         else if (this->moveStep == 6.f)
         {
@@ -341,7 +514,7 @@ public:
         Si el enemigo llega a la posición final, se prepara para ser ordenado establece la variable readyToSort en true,
         se reinicia el contador de pasos de movimiento y se establece la variable trajectoryFinished en true indicando que
         la trayectoria ha finalizado.
-
+        */
         if (this->moveStep == 7.f)
         {
             this->readyToSort = true;
@@ -350,9 +523,8 @@ public:
         }
         return readyToSort;
     }
-    */
-
-    bool runTrajectoryGEN1(int i) // Trayectoria 1 para enemigos.
+    
+    bool runTrajectoryGen1(int i) // Trayectoria 1 para enemigos.
     {
         int VX = std::visit([](const auto &arg)
                             { return arg->getXPos(); }, enemigosActivos[i]);
@@ -707,7 +879,8 @@ public:
 
                     int hitCount = std::visit([](const auto &arg)
                                               { return arg->getHitCount(); }, enemigosActivos[i]);
-
+                    
+                    
                     if (this->type == 1 && hitCount == 0)
                     {
                         std::visit([](const auto &arg)
@@ -720,6 +893,19 @@ public:
                     }
                     else
                     {
+                        if(this->type == 1)
+                        {
+                            this->puntaje->increasePoints(type1Value);
+                        }
+                        else if(this->type == 2)
+                        {
+                            this->puntaje->increasePoints(type2Value);
+                        }
+                        else if(this->type == 3)
+                        {
+                            this->puntaje->increasePoints(type3Value);
+                        }
+                        
                         std::visit([](const auto &arg)
                                    { arg->playDeathSound(); }, enemigosActivos[i]);
 
@@ -842,21 +1028,18 @@ public:
         {
             if (this->readyToSort == false && this->enemySorted[i] == 0)
             {
-
-                runTrajectoryGEN1(i);
                 this->typeToGenerate = 0;
                 this->timerToSpawn = 0;
 
-                /*
                 if (trajectoryPicked == 0)
                 {
-                    trajectoryE1(i);
+                    runTrajectoryGen1(i);
                 }
                 else
                 {
-                    trajectoryE2(i);
+                    runTrajectoryGen2(i);
                 }
-                */
+                
             }
 
             if (this->readyToSort == true && this->enemySorted[i] == 0)
@@ -1027,6 +1210,15 @@ public:
 
                     if (this->nave->takeHit() == 0)
                     {
+                        gameOverTone.play();
+                        this->puntaje->setTextSize(30);
+                        this->puntaje->setTextColor(sf::Color::Red);
+                        this->puntaje->setPosition(180.f, 370.f);
+                        this->puntaje->setText(std::stringstream() << "GAME OVER");
+                        this->puntaje->render(this->window);
+                        this->window->display();
+
+                        std::this_thread::sleep_for(std::chrono::seconds(8));
                         this->endGame = true;
                     }
                     else
@@ -1041,49 +1233,66 @@ public:
     }
 
     void update()
-    {
-        // Actualiza los eventos de la ventana
-        this->pollEvents();
-
-        // Actualiza todo lo relacionado con la nave, como su posición, proyectiles, etc.
-        this->updateNave();
-
-        // Actualiza todo lo relacionado con los enemigos, como su posición, movimiento, estado, etc.
-        this->updateEnemigos();
-
-        // Actualiza los disparos realizados por los enemigos
-        for (int i = 0; i < this->enemigosActivos.size(); i++)
+    {        
+        if(gameStarted == true)
         {
-            std::visit([this](const auto &arg)
-                       { arg->update(); }, enemigosActivos[i]);
+            // Actualiza los eventos de la ventana
+            this->pollEvents();
+
+            // Actualiza todo lo relacionado con la nave, como su posición, proyectiles, etc.
+            this->updateNave();
+
+            // Actualiza todo lo relacionado con los enemigos, como su posición, movimiento, estado, etc.
+            this->updateEnemigos();
+
+            // Actualiza los disparos realizados por los enemigos
+            for (int i = 0; i < this->enemigosActivos.size(); i++)
+            {
+                std::visit([this](const auto &arg)
+                        { arg->update(); }, enemigosActivos[i]);
+            }
+
+            // Actualiza el puntaje
+            this->printPoints();
+        }
+        else if(this->gameStarted == false)
+        {
+            this->loadStartScreen();
         }
     }
 
     void render()
     {
-        /*
-            Muestra en la ventana del juego todos los elementos
-            que sean dibujados previamente según el siguiente orden:
-
-            - Borra el frame anterior
-            - Dibuja todos los elementos especificados
-            - Muestra el frame
-        */
-
-        this->window->clear();
-
-        // Dibujar elementos en ventana
-
-        this->nave->render(this->window);
-
-        for (int i = 0; i < this->enemigosActivos.size(); i++)
+        if(gameStarted == true) // Solo comienza a renderizar si el juego ha comenzado (Se presionó la tecla ENTER)
         {
-            std::visit([this](const auto &arg)
-                       { arg->render(this->window); }, enemigosActivos[i]);
+            /*
+                Muestra en la ventana del juego todos los elementos
+                que sean dibujados previamente según el siguiente orden:
+
+                - Borra el frame anterior
+                - Dibuja todos los elementos especificados
+                - Muestra el frame
+            */
+
+            this->window->clear();
+
+            // Dibujar elementos en ventana
+
+            this->renderGameBackground();
+
+            this->puntaje->render(this->window);
+            
+            this->nave->render(this->window);
+
+            for (int i = 0; i < this->enemigosActivos.size(); i++)
+            {
+                std::visit([this](const auto &arg)
+                        { arg->render(this->window); }, enemigosActivos[i]);
+            }
+
+            // Una vez dibujados los elementos, se muestra la ventana (Equivale a 1 frame)
+
+            this->window->display();
         }
-
-        // Una vez dibujados los elementos, se muestra la ventana (Equivale a 1 frame)
-
-        this->window->display();
     }
 };

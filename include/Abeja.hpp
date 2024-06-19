@@ -75,6 +75,7 @@ public:
         this->innitTexture();
         this->innitSprite();
         this->innitSound();
+        this->setProjectilesColor(sf::Color::Red);
 
         this->enemigo.setPosition(posX, posY);
     }

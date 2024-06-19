@@ -81,6 +81,7 @@ public:
         this->innitVariables();
         this->innitTexture();
         this->innitSprite();
+        this->setProjectilesColor(sf::Color::Red);
 
         this->enemigo.setPosition(posX, posY);
     }

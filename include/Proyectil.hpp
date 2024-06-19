@@ -29,7 +29,6 @@ public:
 
     void update()
     {
-
         this->proyectil.move(this->direction * this->muzzleVelocity);
     }
 
@@ -38,12 +37,21 @@ public:
         target->draw(this->proyectil);
     }
 
-    // Accesores
+    // Getters
 
     const sf::FloatRect getBounds() const
     {
         return this->proyectil.getGlobalBounds();
     }
+
+    //Setters
+
+    void setColor(sf::Color color)
+    {
+        this->proyectil.setFillColor(color);
+    }
+
+    //Constructor y destructor
 
     Proyectil(float dirX, float dirY, float posX, float posY)
     {
