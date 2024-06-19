@@ -24,8 +24,8 @@ private:
     std::vector<Proyectil *> proyectiles; // Vector que almacena los punteros hacia los proyectiles
 
 public:
+    
     // Funciones
-
     void innitTexture()
     {
         // Cargar la textura de la nave
@@ -142,7 +142,6 @@ public:
 
     void updateProyectiles()
     {
-
         unsigned counter = 0;
         for (auto *proyectil : this->proyectiles)
         {
@@ -233,6 +232,15 @@ public:
         en que puede ser llamada por fuera de la clase Nave.
         */
         return this->proyectiles.at(i)->getBounds();
+    }
+
+    const sf::FloatRect getBounds() const
+    {
+        /*
+        Esta función permite obtener los límites en las dimensiones (por así decirlo, el hitbox)
+        de la nave, su utilidad radica en que puede ser llamada por fuera de la clase Nave.
+        */
+        return this->nave.getGlobalBounds();
     }
 
     // Constructor y Destructor

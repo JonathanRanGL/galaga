@@ -13,7 +13,7 @@ int main()
 
     Game game;
 
-    while (game.running()) // Revisa constantemente si la ventana sigue abierta
+    while (game.running() && !(game.getEndGame())) // Revisa constantemente si la ventana sigue abierta
     {
 
         // Update

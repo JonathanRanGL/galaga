@@ -19,6 +19,8 @@ protected:
     int tipo;
     int movDirection;
 
+    std::vector<Proyectil *> proyectiles;
+
 public:
     // Funciones
     void innitVariables()
@@ -32,22 +34,22 @@ public:
         /*
         FUNCION TEMPORAL, SE CAMBIARÁ A UN SPRITE EN EL FUTURO
         */
-       /*
-        this->enemigo.setSize(sf::Vector2f(40.f, 40.f));
+        /*
+         this->enemigo.setSize(sf::Vector2f(40.f, 40.f));
 
-        switch (this->tipo)
-        {
-        case 1:
-            this->enemigo.setFillColor(sf::Color::Magenta);
-            break;
-        case 2:
-            this->enemigo.setFillColor(sf::Color::Blue);
-            break;
-        case 3:
-            this->enemigo.setFillColor(sf::Color::Yellow);
-            break;
-        }
-        */
+         switch (this->tipo)
+         {
+         case 1:
+             this->enemigo.setFillColor(sf::Color::Magenta);
+             break;
+         case 2:
+             this->enemigo.setFillColor(sf::Color::Blue);
+             break;
+         case 3:
+             this->enemigo.setFillColor(sf::Color::Yellow);
+             break;
+         }
+         */
     }
 
     // ------------------------------------------------------------------------------------------------------------------------------------
@@ -128,12 +130,78 @@ public:
 
     // ------------------------------------------------------------------------------------------------------------------------------------
 
-    void update()
+    void shoot()
     {
+        this->proyectiles.push_back(new Proyectil(0.f, 1.f, (this->enemigo.getPosition().x + this->enemigo.getGlobalBounds().width / 2),
+                                                  this->enemigo.getPosition().y + this->enemigo.getGlobalBounds().height));
+    }
+
+    void updateProyectiles()
+    {
+        unsigned counter = 0;
+        for (auto *proyectil : this->proyectiles)
+        {
+            proyectil->update();
+
+            /*
+            Esta sección de esta función se encarga de eliminar los proyectiles que salgan
+            de la pantalla (del lado inferior), para ello se revisa el borde inferior del 
+            proyectil, si este se encuentra fuera de la ventana, se elimina el proyectil en la 
+            posición del vector que le corresponde empezando desde el inicio del arreglo e 
+            incrementando con ayuda de un contador cada que se actualiza un proyectil.
+            */
+            if (proyectil->getBounds().top <= 0.f)
+            {
+                delete this->proyectiles.at(counter);
+                this->proyectiles.erase(this->proyectiles.begin() + counter);
+
+                /*
+                Cuando borre un proyectil se reduce también el tamaño del vector
+                por lo que se reduce el contador para que no se salte un proyectil.
+                */
+                --counter;
+
+                // std::cout << this->proyectiles.size() << std::endl;
+            }
+
+            ++counter;
+        }
+    }
+
+    void deleteProyectil(int index)
+    {
+        /*
+        Esta función permite eliminar un proyectil del vector de proyectiles en una posición en específico,
+        la importancia de la función radica en que puede ser llamada desde fuera de la clase Nave.
+        */
+        delete this->proyectiles.at(index);
+        this->proyectiles.erase(this->proyectiles.begin() + index);
+    }
+
+    int getProyectilesSize()
+    {
+        return this->proyectiles.size();
+    }
+
+    const sf::FloatRect getProyectilesBounds(int i)
+    {
+        return this->proyectiles.at(i)->getBounds();
+    }
+
+    //------------------------------------------------------------------------------------------------------------------------------------
+    void update()
+    {  
+        // Actualización de los proyectiles lanzados por el enemigo
+        this->updateProyectiles();
     }
 
     void render(sf::RenderTarget *target)
     {
+        for (auto *proyectil : this->proyectiles)
+        {
+            proyectil->render(target);
+        }
+        
         target->draw(this->enemigo);
     }
 

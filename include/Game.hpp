@@ -79,15 +79,12 @@ private:
     using EnemigosActivos = std::variant<Abeja *, Mariposa *, Jefe *>;
     std::vector<EnemigosActivos> enemigosActivos;
 
-    std::vector<Abeja *> abejas;
-
     /*
     Se crea un vector de enemigos encargado de almacenar los datos de todos los enemigos activos.
     Si el enemigo muere, se elimina del vector liberando la memporia que ocupaba, al igual que se
     hace con el proyectil de la nave que lo impactó y todos aquellos proyectiles que salen de la
     ventana.
     */
-    std::vector<Enemigo *> enemigos;
 
     /*
     Este vector se encarga de almacenar un 1 o un 0 que indicará si el enemigo ha sido ordenado o no,
@@ -99,6 +96,8 @@ private:
 
     void initVariables()
     {
+        this->endGame = false;
+
         this->window = nullptr;
 
         this->firstEnemy = true;
@@ -158,15 +157,7 @@ public:
         delete this->nave;
 
         // Eliminar enemigos
-        for (auto *i : this->enemigos)
-        {
-            delete i;
-        }
-
-        for (auto *i : this->abejas)
-        {
-            delete i;
-        }
+        this->enemigosActivos.clear();
     }
 
     // Evaluadores (retornan algo)
@@ -174,6 +165,11 @@ public:
     const bool running() const
     {
         return this->window->isOpen();
+    }
+
+    const bool getEndGame() const
+    {
+        return this->endGame;
     }
 
     // Funciones
@@ -251,7 +247,8 @@ public:
             }
         }
     }
-
+    
+    /*
     bool trajectoryE2(int i) // Trayectoria 2 para enemigos.
     {
         // Establece la posición inicial del enemigo antes de aparecer en la pantalla
@@ -335,7 +332,7 @@ public:
         Si el enemigo llega a la posición final, se prepara para ser ordenado establece la variable readyToSort en true,
         se reinicia el contador de pasos de movimiento y se establece la variable trajectoryFinished en true indicando que
         la trayectoria ha finalizado.
-        */
+        
         if (this->moveStep == 7.f)
         {
             this->readyToSort = true;
@@ -344,8 +341,9 @@ public:
         }
         return readyToSort;
     }
+    */
 
-    bool trajectoryGEN1(int i) // Trayectoria 1 para enemigos.
+    bool runTrajectoryGEN1(int i) // Trayectoria 1 para enemigos.
     {
         int VX = std::visit([](const auto& arg){
             return arg->getXPos();
@@ -705,6 +703,11 @@ public:
             this->readyToSort = false;
             this->enemySorted[i] = 1;
             this->typeToGenerate = rand() % 3 + 1;
+            
+            std::visit([](const auto& arg){
+                            arg->shoot();
+                        }, enemigosActivos[i]);
+            std::cout << "Disparo enemigo" << std::endl;
         }
     }
     
@@ -822,7 +825,6 @@ public:
                         
                         nave->deleteProyectil(k);
                         this->enemigosActivos.erase(this->enemigosActivos.begin() + i);
-                        //this->j = 0;
 
                         if (enemySorted[i] == 0)
                         {
@@ -857,7 +859,7 @@ public:
             if (this->readyToSort == false && this->enemySorted[i] == 0)
             {
                 
-                trajectoryGEN1(i);
+                runTrajectoryGEN1(i);
                 this->typeToGenerate = 0;
                 this->timerToSpawn = 0;
 
@@ -882,7 +884,7 @@ public:
             j = i;
         }
 
-        std::cout << "J en updateEnemigos: " << j << std::endl;
+        //std::cout << timerToSpawn << std::endl;
         if (firstEnemy == false && enemySorted[j] == 1 && !isType1Full() && this->typeToGenerate == 1)
         {
             this->enemigosActivos.push_back(new Jefe(-10000.f, 10000.f)); 
@@ -987,16 +989,59 @@ public:
         
     }
 
+    void updateNave()
+    {
+        //Actualiza la nave
+        this->nave->update(this->window);
+
+        //Revisa si uno de los proyectiles enemigos impacta con la nave
+        for(int i = 0 ; i < this->enemigosActivos.size(); i++)
+        {
+            int proyectilesEnemigosActivos = std::visit([](const auto& arg){
+                return arg->getProyectilesSize();
+            }, enemigosActivos[i]);
+            
+            for(size_t k = 0; k < proyectilesEnemigosActivos; k++)
+            {
+                if(this->nave->getBounds().intersects(
+                    std::visit([k](const auto& arg){
+                        return arg->getProyectilesBounds(k);
+                    }, enemigosActivos[i])
+                ))
+                {
+                    std::visit([k](const auto& arg){
+                        arg->deleteProyectil(k);
+                    }, enemigosActivos[i]);
+
+                    delete this->nave;
+                    this->endGame = true;
+                }
+            }
+        }
+
+    }
+    
     void update()
     {
         // Actualiza los eventos de la ventana
         this->pollEvents();
 
         // Actualiza todo lo relacionado con la nave, como su posición, proyectiles, etc.
-        this->nave->update(this->window);
+        this->updateNave();
 
         // Actualiza todo lo relacionado con los enemigos, como su posición, movimiento, estado, etc.
         this->updateEnemigos();
+
+        //Actualiza los disparos realizados por los enemigos
+        for(int i = 0; i < this->enemigosActivos.size(); i++)
+        {
+            std::visit([this](const auto& arg){
+                arg->update();
+            }, enemigosActivos[i]);
+        }
+
+
+
     }
 
     void render()
@@ -1015,16 +1060,6 @@ public:
         // Dibujar elementos en ventana
 
         this->nave->render(this->window);
-
-        for (auto *Enemigo : this->enemigos)
-        {
-            Enemigo->render(this->window);
-        }
-
-        for (auto *Abeja : this->abejas)
-        {
-            Abeja->render(this->window);
-        }
 
         for(int i = 0; i < this->enemigosActivos.size(); i++)
         {
