@@ -145,9 +145,9 @@ public:
 
             /*
             Esta sección de esta función se encarga de eliminar los proyectiles que salgan
-            de la pantalla (del lado inferior), para ello se revisa el borde inferior del 
-            proyectil, si este se encuentra fuera de la ventana, se elimina el proyectil en la 
-            posición del vector que le corresponde empezando desde el inicio del arreglo e 
+            de la pantalla (del lado inferior), para ello se revisa el borde inferior del
+            proyectil, si este se encuentra fuera de la ventana, se elimina el proyectil en la
+            posición del vector que le corresponde empezando desde el inicio del arreglo e
             incrementando con ayuda de un contador cada que se actualiza un proyectil.
             */
             if (proyectil->getBounds().top <= 0.f)
@@ -190,7 +190,7 @@ public:
 
     //------------------------------------------------------------------------------------------------------------------------------------
     void update()
-    {  
+    {
         // Actualización de los proyectiles lanzados por el enemigo
         this->updateProyectiles();
     }
@@ -201,7 +201,7 @@ public:
         {
             proyectil->render(target);
         }
-        
+
         target->draw(this->enemigo);
     }
 

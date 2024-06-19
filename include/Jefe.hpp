@@ -30,7 +30,6 @@ private:
     }
 
 public:
-    
     void innitTexture()
     {
         if (!this->texture.loadFromFile("./assets/images/jefe/jefe1.png"))
@@ -63,7 +62,7 @@ public:
             std::cout << "ERROR::Mariposa::innitSound::No se pudo cargar el sonido de disparo" << std::endl;
         }
         damage.setBuffer(buffer);
-        
+
         damage.play();
     }
 
@@ -76,7 +75,7 @@ public:
     {
         return this->hitCount;
     }
-    
+
     Jefe(float posX = 0.f, float posY = 0.f)
     {
         this->innitVariables();

@@ -31,7 +31,6 @@ private:
     std::vector<Proyectil *> proyectiles; // Vector que almacena los punteros hacia los proyectiles
 
 public:
-    
     // Funciones
     void innitTexture()
     {
@@ -275,15 +274,15 @@ public:
         this->respawn.play();
     }
 
-    //Setters
-    
+    // Setters
+
     void resetPosition()
     {
         this->nave.setPosition(300.f - ((this->nave.getGlobalBounds().width) / 2), 700.f);
     }
-    
+
     int takeHit()
-    {   
+    {
         remainingLives--;
         return this->remainingLives;
     }

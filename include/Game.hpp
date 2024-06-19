@@ -5,6 +5,7 @@
 #include <SFML/Audio.hpp>
 #include <iostream>
 #include <math.h>
+#include <cmath>
 #include <vector>
 #include <variant>
 
@@ -66,6 +67,10 @@ private:
     int timerToSpawn;
     int timerToSpawnLimit;
 
+    int randEnemy;
+    int enemyShootingInterval;
+    int enemyShootingIntervalLimit;
+
     // Window
 
     sf::RenderWindow *window;
@@ -124,6 +129,10 @@ private:
         this->typeToGenerate = 0;
         this->timerToSpawn = 0;
         this->timerToSpawnLimit = 100;
+
+        this->randEnemy = 0;
+        this->enemyShootingInterval = 0;
+        this->enemyShootingIntervalLimit = 100;
     }
 
     void initWindow()
@@ -247,7 +256,7 @@ public:
             }
         }
     }
-    
+
     /*
     bool trajectoryE2(int i) // Trayectoria 2 para enemigos.
     {
@@ -332,7 +341,7 @@ public:
         Si el enemigo llega a la posición final, se prepara para ser ordenado establece la variable readyToSort en true,
         se reinicia el contador de pasos de movimiento y se establece la variable trajectoryFinished en true indicando que
         la trayectoria ha finalizado.
-        
+
         if (this->moveStep == 7.f)
         {
             this->readyToSort = true;
@@ -345,21 +354,18 @@ public:
 
     bool runTrajectoryGEN1(int i) // Trayectoria 1 para enemigos.
     {
-        int VX = std::visit([](const auto& arg){
-            return arg->getXPos();
-        }, enemigosActivos[i]);
-        
-        int VY = std::visit([](const auto& arg){
-            return arg->getYPos();
-        }, enemigosActivos[i]);
-        
+        int VX = std::visit([](const auto &arg)
+                            { return arg->getXPos(); }, enemigosActivos[i]);
+
+        int VY = std::visit([](const auto &arg)
+                            { return arg->getYPos(); }, enemigosActivos[i]);
+
         // Establece la posición inicial del enemigo antes de aparecer en la pantalla
         if (this->moveStep == -1.f)
         {
-            std::visit([](const auto& arg){
-                arg->setToXY(310.f, -40.f);
-            }, enemigosActivos[i]);
-            
+            std::visit([](const auto &arg)
+                       { arg->setToXY(310.f, -40.f); }, enemigosActivos[i]);
+
             this->moveStep = 0.f;
             this->isSorted = false;
         }
@@ -367,9 +373,8 @@ public:
         // Primer movimiento
         if (VY < 100.f && this->moveStep == 0.f)
         {
-            std::visit([](const auto& arg){
-                arg->moveDown();
-            }, enemigosActivos[i]);
+            std::visit([](const auto &arg)
+                       { arg->moveDown(); }, enemigosActivos[i]);
         }
         else if (this->moveStep == 0.f)
         {
@@ -377,11 +382,10 @@ public:
         }
 
         // Segundo movimiento
-        if(VX < 450.f && this->moveStep == 1.f)
+        if (VX < 450.f && this->moveStep == 1.f)
         {
-            std::visit([](const auto& arg){
-                arg->moveDiagDownRight(1.5, 1.f);
-            }, enemigosActivos[i]);
+            std::visit([](const auto &arg)
+                       { arg->moveDiagDownRight(1.5, 1.f); }, enemigosActivos[i]);
         }
         else if (this->moveStep == 1.f)
         {
@@ -391,9 +395,8 @@ public:
         // Tercer movimiento
         if (VX < 500.f && this->moveStep == 2.f)
         {
-            std::visit([](const auto& arg){
-                arg->moveDiagDownRight(1, 1.5);
-            }, enemigosActivos[i]);
+            std::visit([](const auto &arg)
+                       { arg->moveDiagDownRight(1, 1.5); }, enemigosActivos[i]);
         }
         else if (this->moveStep == 2.f)
         {
@@ -403,9 +406,8 @@ public:
         // Cuarto movimiento
         if (VY < 380.f && this->moveStep == 3.f)
         {
-            std::visit([](const auto& arg){
-                arg->moveDown();
-            }, enemigosActivos[i]);
+            std::visit([](const auto &arg)
+                       { arg->moveDown(); }, enemigosActivos[i]);
         }
         else if (this->moveStep == 3.f)
         {
@@ -415,9 +417,8 @@ public:
         // Quinto movimiento
         if (VX > 390.f && this->moveStep == 4.f)
         {
-            std::visit([](const auto& arg){
-                arg->moveDiagDownLeft(1.3, 0.8);
-            }, enemigosActivos[i]);
+            std::visit([](const auto &arg)
+                       { arg->moveDiagDownLeft(1.3, 0.8); }, enemigosActivos[i]);
         }
         else if (this->moveStep == 4.f)
         {
@@ -427,9 +428,8 @@ public:
         // Sexto movimiento
         if (VX > 310.f && this->moveStep == 5.f)
         {
-            std::visit([](const auto& arg){
-                arg->moveDiagUpLeft(1.3, 0.8);
-            }, enemigosActivos[i]);
+            std::visit([](const auto &arg)
+                       { arg->moveDiagUpLeft(1.3, 0.8); }, enemigosActivos[i]);
         }
         else if (this->moveStep == 5.f)
         {
@@ -439,9 +439,8 @@ public:
         // Séptimo movimiento
         if (VY > 360.f && this->moveStep == 6.f)
         {
-            std::visit([](const auto& arg){
-                arg->moveUp();
-            }, enemigosActivos[i]);
+            std::visit([](const auto &arg)
+                       { arg->moveUp(); }, enemigosActivos[i]);
         }
         else if (this->moveStep == 6.f)
         {
@@ -461,7 +460,7 @@ public:
         }
         return readyToSort;
     }
-    
+
     void sortEnemyGEN(int i)
     {
         /*
@@ -471,21 +470,17 @@ public:
         La posición que se le asigna en Y depende de su tipo, mientras que la posición en X es aleatoria para agregar un poco de
         variabilidad en la posición de los enemigos cada vez que se juegue una partida.
         */
-        this->type = std::visit([](const auto& arg){
-            return arg->getType();
-        }, enemigosActivos[i]);
+        this->type = std::visit([](const auto &arg)
+                                { return arg->getType(); }, enemigosActivos[i]);
 
-        int VX = std::visit([](const auto& arg){
-            return arg->getXPos();
-        }, enemigosActivos[i]);
+        int VX = std::visit([](const auto &arg)
+                            { return arg->getXPos(); }, enemigosActivos[i]);
 
-        int VY = std::visit([](const auto& arg){
-            return arg->getYPos();
-        }, enemigosActivos[i]);
+        int VY = std::visit([](const auto &arg)
+                            { return arg->getYPos(); }, enemigosActivos[i]);
 
-        int speed = std::visit([](const auto& arg){
-            return arg->getSpeed();
-        }, enemigosActivos[i]);
+        int speed = std::visit([](const auto &arg)
+                               { return arg->getSpeed(); }, enemigosActivos[i]);
 
         if (this->type == 1.f)
         {
@@ -510,35 +505,30 @@ public:
             }
             if (VX < this->sortX)
             {
-                std::visit([](const auto& arg){
-                    arg->moveRight();
-                }, enemigosActivos[i]);
+                std::visit([](const auto &arg)
+                           { arg->moveRight(); }, enemigosActivos[i]);
             }
             else if (VX > this->sortX)
             {
-                std::visit([](const auto& arg){
-                    arg->moveLeft();
-                }, enemigosActivos[i]);
+                std::visit([](const auto &arg)
+                           { arg->moveLeft(); }, enemigosActivos[i]);
             }
 
             if (VY > this->sortY)
             {
-                std::visit([](const auto& arg){
-                    arg->moveUp();
-                }, enemigosActivos[i]);
+                std::visit([](const auto &arg)
+                           { arg->moveUp(); }, enemigosActivos[i]);
             }
             if (VY < this->sortY)
             {
-                std::visit([](const auto& arg){
-                    arg->moveDown();
-                }, enemigosActivos[i]);
+                std::visit([](const auto &arg)
+                           { arg->moveDown(); }, enemigosActivos[i]);
             }
-            
+
             if ((abs(this->sortX - VX)) <= speed && (abs(this->sortY - VY)) < speed)
             {
-                std::visit([this](const auto& arg){
-                    arg->setToXY(this->sortX, this->sortY);
-                }, enemigosActivos[i]);
+                std::visit([this](const auto &arg)
+                           { arg->setToXY(this->sortX, this->sortY); }, enemigosActivos[i]);
             }
         }
         else if (this->type == 2.f)
@@ -584,34 +574,29 @@ public:
             }
             if (VX < this->sortX)
             {
-                std::visit([](const auto& arg){
-                    arg->moveRight();
-                }, enemigosActivos[i]);
+                std::visit([](const auto &arg)
+                           { arg->moveRight(); }, enemigosActivos[i]);
             }
             else if (VX > this->sortX)
             {
-                std::visit([](const auto& arg){
-                    arg->moveLeft();
-                }, enemigosActivos[i]);
+                std::visit([](const auto &arg)
+                           { arg->moveLeft(); }, enemigosActivos[i]);
             }
 
             if (VY > this->sortY)
             {
-                std::visit([](const auto& arg){
-                    arg->moveUp();
-                }, enemigosActivos[i]);
+                std::visit([](const auto &arg)
+                           { arg->moveUp(); }, enemigosActivos[i]);
             }
             if (VY < this->sortY)
             {
-                std::visit([](const auto& arg){
-                    arg->moveDown();
-                }, enemigosActivos[i]);
+                std::visit([](const auto &arg)
+                           { arg->moveDown(); }, enemigosActivos[i]);
             }
             if ((abs(this->sortX - VX)) <= speed && (abs(this->sortY - VY)) < speed)
             {
-                std::visit([this](const auto& arg){
-                    arg->setToXY(this->sortX, this->sortY);
-                }, enemigosActivos[i]);
+                std::visit([this](const auto &arg)
+                           { arg->setToXY(this->sortX, this->sortY); }, enemigosActivos[i]);
             }
         }
         else if (this->type == 3.f)
@@ -657,42 +642,35 @@ public:
             }
             if (VX < this->sortX)
             {
-                std::visit([](const auto& arg){
-                    arg->moveRight();
-                }, enemigosActivos[i]);
+                std::visit([](const auto &arg)
+                           { arg->moveRight(); }, enemigosActivos[i]);
             }
             else if (VX > this->sortX)
             {
-                std::visit([](const auto& arg){
-                    arg->moveLeft();
-                }, enemigosActivos[i]);
+                std::visit([](const auto &arg)
+                           { arg->moveLeft(); }, enemigosActivos[i]);
             }
 
             if (VY > this->sortY)
             {
-                std::visit([](const auto& arg){
-                    arg->moveUp();
-                }, enemigosActivos[i]);
+                std::visit([](const auto &arg)
+                           { arg->moveUp(); }, enemigosActivos[i]);
             }
             if (VY < this->sortY)
             {
-                std::visit([](const auto& arg){
-                    arg->moveDown();
-                }, enemigosActivos[i]);
+                std::visit([](const auto &arg)
+                           { arg->moveDown(); }, enemigosActivos[i]);
             }
             if ((abs(this->sortX - VX)) <= speed && (abs(this->sortY - VY)) < speed)
             {
-                std::visit([this](const auto& arg){
-                    arg->setToXY(this->sortX, this->sortY);
-                }, enemigosActivos[i]);
+                std::visit([this](const auto &arg)
+                           { arg->setToXY(this->sortX, this->sortY); }, enemigosActivos[i]);
 
-                VX = std::visit([](const auto& arg){
-                    return arg->getXPos();
-                }, enemigosActivos[i]);
+                VX = std::visit([](const auto &arg)
+                                { return arg->getXPos(); }, enemigosActivos[i]);
 
-                VY = std::visit([](const auto& arg){
-                    return arg->getYPos();
-                }, enemigosActivos[i]);
+                VY = std::visit([](const auto &arg)
+                                { return arg->getYPos(); }, enemigosActivos[i]);
             }
         }
 
@@ -703,14 +681,9 @@ public:
             this->readyToSort = false;
             this->enemySorted[i] = 1;
             this->typeToGenerate = rand() % 3 + 1;
-            
-            std::visit([](const auto& arg){
-                            arg->shoot();
-                        }, enemigosActivos[i]);
-            std::cout << "Disparo enemigo" << std::endl;
         }
     }
-    
+
     void checkForHits()
     {
         for (int i = 0; i < this->enemigosActivos.size(); i++)
@@ -720,46 +693,35 @@ public:
             {
 
                 if (nave->getProyectilesBounds(k).intersects(
-                        std::visit([](const auto& arg){
-                            return arg->getBounds();
-                        }, enemigosActivos[i])
-                    ))
+                        std::visit([](const auto &arg)
+                                   { return arg->getBounds(); }, enemigosActivos[i])))
                 {
-                    float X = std::visit([](const auto& arg){
-                        return arg->getXPos();
-                    }, enemigosActivos[i]);
-                    
-                    float Y = std::visit([](const auto& arg){
-                        return arg->getYPos();
-                    }, enemigosActivos[i]);
+                    float X = std::visit([](const auto &arg)
+                                         { return arg->getXPos(); }, enemigosActivos[i]);
 
-                    this->type = std::visit([](const auto& arg){
-                        return arg->getType();
-                    }, enemigosActivos[i]);
+                    float Y = std::visit([](const auto &arg)
+                                         { return arg->getYPos(); }, enemigosActivos[i]);
 
-                    int hitCount = std::visit([](const auto& arg){
-                        return arg->getHitCount();
-                    }, enemigosActivos[i]);
+                    this->type = std::visit([](const auto &arg)
+                                            { return arg->getType(); }, enemigosActivos[i]);
 
-                    
-                    
-                    if(this->type == 1 && hitCount == 0)
+                    int hitCount = std::visit([](const auto &arg)
+                                              { return arg->getHitCount(); }, enemigosActivos[i]);
+
+                    if (this->type == 1 && hitCount == 0)
                     {
-                        std::visit([](const auto& arg){
-                            arg->playDamageSound();
-                        }, enemigosActivos[i]);
-                        
-                        std::visit([](const auto& arg){
-                            arg->takeHit();
-                        }, enemigosActivos[i]);
-                        
+                        std::visit([](const auto &arg)
+                                   { arg->playDamageSound(); }, enemigosActivos[i]);
+
+                        std::visit([](const auto &arg)
+                                   { arg->takeHit(); }, enemigosActivos[i]);
+
                         nave->deleteProyectil(k);
                     }
                     else
                     {
-                        std::visit([](const auto& arg){
-                            arg->playDeathSound();
-                        }, enemigosActivos[i]);
+                        std::visit([](const auto &arg)
+                                   { arg->playDeathSound(); }, enemigosActivos[i]);
 
                         for (int j = 0; this->slotReseted == false && j <= 1; j++)
                         {
@@ -822,7 +784,7 @@ public:
                             }
                             this->slotReseted = false;
                         }
-                        
+
                         nave->deleteProyectil(k);
                         this->enemigosActivos.erase(this->enemigosActivos.begin() + i);
 
@@ -841,24 +803,46 @@ public:
         }
     }
 
+    void pickAndShoot()
+    {
+        /*
+        Esta función se encarga de aleatoriamente seleccionar enemigos activos y para hacerlos disparar
+        la cantidad de enemigos que disparan a la vez va en función de la cantidad de enemigos activos
+        en pantalla y va desde 1 hasta 4 enemigos disparando a la vez o 5 si llenan todas las celdas.
+        */
+        for (int i = 1; i <= ((std::floor(this->enemigosActivos.size() / 10)) + 1); i++)
+        {
+            randEnemy = rand() % this->enemigosActivos.size();
+            std::visit([this](const auto &arg)
+                       { arg->shoot(); }, enemigosActivos[randEnemy]);
+        }
+    }
+
     void updateEnemigos()
     {
+        /*
+        Esta función es una de las más importantes en el juego, se encarga de la generación aleatoria de enemigos, de asignarles una de las trayectorias
+        que existen de forma aleatoria, además de mandar a llamar otras funciones relacionadas a estos, como la función que se encarga de ordenarlos,
+        la función que se encarga de revisar si un enemigo ha sido impactado por un proyectil de la nave o la función que se encarga de hacer que los
+        enemigos disparen.
+        */
+
         if (firstEnemy == true) // Primer caso únicamente aplicando al primer enemigo generado
         {
-            this->enemigosActivos.push_back(new Abeja(-10000.f, 10000.f)); 
-            this->enemySorted.push_back(0);                                 // En el vector de enemigos ordenados se asigna un 0 en la posición correspondiente al enemigo
+            this->enemigosActivos.push_back(new Abeja(-10000.f, 10000.f)); // El primer enemigo siempre será una abeja (no hay un motivo en particular)
+            this->enemySorted.push_back(0);                                // En el vector de enemigos ordenados se asigna un 0 en la posición correspondiente al enemigo
             this->firstEnemy = false;
             this->typeToGenerate = rand() % 3 + 1;
             this->timerToSpawn = 0;
         }
 
-        //std::cout << this->enemigosActivos.size() << std::endl;
+        // std::cout << this->enemigosActivos.size() << std::endl;
 
-        for (int i = 0; i < this->enemigosActivos.size() ; i++)
+        for (int i = 0; i < this->enemigosActivos.size(); i++)
         {
             if (this->readyToSort == false && this->enemySorted[i] == 0)
             {
-                
+
                 runTrajectoryGEN1(i);
                 this->typeToGenerate = 0;
                 this->timerToSpawn = 0;
@@ -884,10 +868,10 @@ public:
             j = i;
         }
 
-        //std::cout << timerToSpawn << std::endl;
+        // std::cout << timerToSpawn << std::endl;
         if (firstEnemy == false && enemySorted[j] == 1 && !isType1Full() && this->typeToGenerate == 1)
         {
-            this->enemigosActivos.push_back(new Jefe(-10000.f, 10000.f)); 
+            this->enemigosActivos.push_back(new Jefe(-10000.f, 10000.f));
             this->enemySorted.push_back(0);
             this->readyToSort = false;
             this->timerToSpawn = 0;
@@ -897,10 +881,9 @@ public:
             this->timerToSpawn++;
         }
 
-        
         if (firstEnemy == false && enemySorted[j] == 1 && !isType2Full() && this->typeToGenerate == 2)
         {
-            this->enemigosActivos.push_back(new Mariposa(-10000.f, 10000.f)); 
+            this->enemigosActivos.push_back(new Mariposa(-10000.f, 10000.f));
             this->enemySorted.push_back(0);
             this->readyToSort = false;
             this->timerToSpawn = 0;
@@ -909,10 +892,10 @@ public:
         {
             this->timerToSpawn++;
         }
-        
+
         if (firstEnemy == false && enemySorted[j] == 1 && !isType3Full() && this->typeToGenerate == 3)
         {
-            this->enemigosActivos.push_back(new Abeja(-10000.f, 10000.f)); 
+            this->enemigosActivos.push_back(new Abeja(-10000.f, 10000.f));
             this->enemySorted.push_back(0);
             this->readyToSort = false;
             this->timerToSpawn = 0;
@@ -927,125 +910,122 @@ public:
             typeToGenerate = rand() % 3 + 1;
             if (this->typeToGenerate == 1)
             {
-                this->enemigosActivos.push_back(new Jefe(-10000.f, 10000.f)); 
+                this->enemigosActivos.push_back(new Jefe(-10000.f, 10000.f));
                 this->enemySorted.push_back(0);
                 this->readyToSort = false;
                 this->timerToSpawn = 0;
-                
             }
             if (this->typeToGenerate == 2)
             {
-                this->enemigosActivos.push_back(new Mariposa(-10000.f, 10000.f)); 
+                this->enemigosActivos.push_back(new Mariposa(-10000.f, 10000.f));
                 this->enemySorted.push_back(0);
                 this->readyToSort = false;
                 this->timerToSpawn = 0;
             }
             if (this->typeToGenerate == 3)
             {
-                this->enemigosActivos.push_back(new Abeja(-10000.f, 10000.f)); 
+                this->enemigosActivos.push_back(new Abeja(-10000.f, 10000.f));
                 this->enemySorted.push_back(0);
                 this->readyToSort = false;
                 this->timerToSpawn = 0;
             }
         }
 
-        if(this->timerToSpawn >= this->timerToSpawnLimit)
+        if (this->timerToSpawn >= this->timerToSpawnLimit)
         {
             typeToGenerate = rand() % 3 + 1;
             if (this->typeToGenerate == 1 && !isType1Full())
             {
-                this->enemigosActivos.push_back(new Jefe(-10000.f, 10000.f)); 
-                this->enemySorted.push_back(0);
-                this->readyToSort = false;
-                this->timerToSpawn = 0;
-                
-            }
-            if (this->typeToGenerate == 2  && !isType1Full())
-            {
-                this->enemigosActivos.push_back(new Mariposa(-10000.f, 10000.f)); 
+                this->enemigosActivos.push_back(new Jefe(-10000.f, 10000.f));
                 this->enemySorted.push_back(0);
                 this->readyToSort = false;
                 this->timerToSpawn = 0;
             }
-            if (this->typeToGenerate == 3  && !isType1Full())
+            if (this->typeToGenerate == 2 && !isType1Full())
             {
-                this->enemigosActivos.push_back(new Abeja(-10000.f, 10000.f)); 
+                this->enemigosActivos.push_back(new Mariposa(-10000.f, 10000.f));
+                this->enemySorted.push_back(0);
+                this->readyToSort = false;
+                this->timerToSpawn = 0;
+            }
+            if (this->typeToGenerate == 3 && !isType1Full())
+            {
+                this->enemigosActivos.push_back(new Abeja(-10000.f, 10000.f));
                 this->enemySorted.push_back(0);
                 this->readyToSort = false;
                 this->timerToSpawn = 0;
             }
         }
-        
-        /*
-        for(int k = 0; k < this->enemySorted.size(); k++)
-        {
-            if(this->enemySorted[])
-        }
-*/
-        
 
         this->checkForHits();
 
-        
+        if (this->enemyShootingInterval >= this->enemyShootingIntervalLimit)
+        {
+            this->enemyShootingInterval = 0;
+            this->pickAndShoot();
+        }
+        else
+        {
+            this->enemyShootingInterval++;
+        }
     }
 
     void updateNave()
     {
-        //Actualiza la nave
+        // Actualiza la nave
         this->nave->update(this->window);
 
         /*
         En este segmento de updateNave se revisa uno por uno los proyectiles que cada enemigo ha disparado
         para detectar si uno de ellos impacta con la nave (es decir sus hitboxes se intersectan), si este
-        es el caso, se elimina dicho proyectil enemigo y...
+        es el caso, se elimina dicho proyectil enemigo y se procede con la animación de la destrucción de la
+        nave, se le reduce una vida a la nave y se revisa si la nave aún tiene vidas restantes, si no es así
+        se termina el juego, caso contrario se reinicia la posición de la nave y se le asigna su textura por
+        defecto.
         */
-        for(int i = 0 ; i < this->enemigosActivos.size(); i++)
+        for (int i = 0; i < this->enemigosActivos.size(); i++)
         {
-            int proyectilesEnemigosActivos = std::visit([](const auto& arg){
-                return arg->getProyectilesSize();
-            }, enemigosActivos[i]);
-            
-            for(size_t k = 0; k < proyectilesEnemigosActivos; k++)
+            int proyectilesEnemigosActivos = std::visit([](const auto &arg)
+                                                        { return arg->getProyectilesSize(); }, enemigosActivos[i]);
+
+            for (size_t k = 0; k < proyectilesEnemigosActivos; k++)
             {
-                if(this->nave->getBounds().intersects(
-                    std::visit([k](const auto& arg){
-                        return arg->getProyectilesBounds(k);
-                    }, enemigosActivos[i])
-                ))
+                if (this->nave->getBounds().intersects(
+                        std::visit([k](const auto &arg)
+                                   { return arg->getProyectilesBounds(k); }, enemigosActivos[i])))
                 {
-                    std::visit([k](const auto& arg){
-                        arg->deleteProyectil(k);
-                    }, enemigosActivos[i]);
+                    std::visit([k](const auto &arg)
+                               { arg->deleteProyectil(k); }, enemigosActivos[i]);
 
                     this->nave->playDestroyedSound();
 
-                    for(int i = 0; i <= 400 ; i++)
+                    for (int i = 0; i <= 400; i++)
                     {
-                        if(i <= 40)
+                        if (i <= 40)
                         {
                             this->nave->setDestroyedTexture1();
                         }
-                        else if(i <= 80)
+                        else if (i <= 80)
                         {
                             this->nave->setDestroyedTexture2();
                         }
-                        else if(i <= 120)
+                        else if (i <= 120)
                         {
                             this->nave->setDestroyedTexture3();
                         }
-                        else if(i <= 160)
+                        else if (i <= 160)
                         {
                             this->nave->setDestroyedTexture4();
                         }
-                        else if(i <= 400)
+                        else if (i <= 400)
                         {
                             this->nave->setDestroyedTexture5();
                         }
                         this->nave->render(this->window);
                         this->window->display();
                     }
-                    
-                    if(this->nave->takeHit() == 0)
+
+                    if (this->nave->takeHit() == 0)
                     {
                         this->endGame = true;
                     }
@@ -1055,13 +1035,11 @@ public:
                         this->nave->playRespawnSound();
                         this->nave->resetPosition();
                     }
-                    
                 }
             }
         }
-
     }
-    
+
     void update()
     {
         // Actualiza los eventos de la ventana
@@ -1073,16 +1051,12 @@ public:
         // Actualiza todo lo relacionado con los enemigos, como su posición, movimiento, estado, etc.
         this->updateEnemigos();
 
-        //Actualiza los disparos realizados por los enemigos
-        for(int i = 0; i < this->enemigosActivos.size(); i++)
+        // Actualiza los disparos realizados por los enemigos
+        for (int i = 0; i < this->enemigosActivos.size(); i++)
         {
-            std::visit([this](const auto& arg){
-                arg->update();
-            }, enemigosActivos[i]);
+            std::visit([this](const auto &arg)
+                       { arg->update(); }, enemigosActivos[i]);
         }
-
-
-
     }
 
     void render()
@@ -1102,11 +1076,10 @@ public:
 
         this->nave->render(this->window);
 
-        for(int i = 0; i < this->enemigosActivos.size(); i++)
+        for (int i = 0; i < this->enemigosActivos.size(); i++)
         {
-            std::visit([this](const auto& arg){
-                arg->render(this->window);
-            }, enemigosActivos[i]);
+            std::visit([this](const auto &arg)
+                       { arg->render(this->window); }, enemigosActivos[i]);
         }
 
         // Una vez dibujados los elementos, se muestra la ventana (Equivale a 1 frame)

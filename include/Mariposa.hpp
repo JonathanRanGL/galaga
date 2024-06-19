@@ -28,7 +28,6 @@ private:
     }
 
 public:
-    
     void innitTexture()
     {
         if (!this->texture.loadFromFile("./assets/images/mariposa/mariposa1.png"))
@@ -56,7 +55,7 @@ public:
     {
         death.play();
     }
-    
+
     void playDamageSound()
     {
     }
@@ -69,7 +68,7 @@ public:
     {
         return 0;
     }
-    
+
     Mariposa(float posX = 0.f, float posY = 0.f)
     {
         this->innitVariables();
