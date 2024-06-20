@@ -1,5 +1,5 @@
 # **Galaga Game**
-![Portada Galaga](https://cdn.clarosports.com/clarosports/2023/06/galaga-144927-1024x576.jpg)
+![Inicio](https://github.com/JonathanRanGL/galaga/assets/159947420/164ed5d2-c116-4d04-874a-655a4cda710b)
 
 ## **Creadores**
 ___
@@ -24,7 +24,7 @@ ___
 El juego ha sido desarrollado utilizando Visual Studio Code, el lenguaje C++ en conjunto con la biblioteca SFML, la cual nos permite crear animaciones, cargar imágenes, gestionar sonidos, manipular tipos de fuente, entre otras funcionalidades. En esta implementación se ha puesto en marcha la mecánica principal del juego, la cual abarca el movimiento del jugador, el disparo de misiles, la aparición y movimiento de los enemigos, así como la lógica de colisiones y el seguimiento de los puntajes obtenidos por el jugador.
 
 Se ha prestado especial atención a los detalles para capturar fielmente la esencia del juego original Galaga.
-
+![Partida](https://github.com/JonathanRanGL/galaga/assets/159947420/832a79cf-f406-40df-9b84-7cb260c2bab5)
 
 
 ## **Como Jugar**
@@ -102,3 +102,4 @@ Una vez instalado es necesario agregar los siguientes directorios al path de win
 * PlantUML
 * GitGraph
 
+![Game Over](https://github.com/JonathanRanGL/galaga/assets/159947420/ae772dd0-ef7b-4627-9fbb-30f455236bdc)
