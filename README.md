@@ -102,4 +102,23 @@ Una vez instalado es necesario agregar los siguientes directorios al path de win
 * PlantUML
 * GitGraph
 
+# **Creditos**
+
+## Imagenes 
+[Jefe](https://static.wikia.nocookie.net/ssb/images/3/3c/Boss-Galaga-Sprite.png/revision/latest?cb=20230213092347)
+
+[Abeja](https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.pngfind.com%2Fmpng%2FmxxioR_galaga-galaga-enemy-no-background-hd-png-download%2F&psig=AOvVaw3eImNE-SvPSPc0YfOadKxi&ust=1718939924951000&source=images&cd=vfe&opi=89978449&ved=0CA8QjRxqFwoTCKDJrq6c6YYDFQAAAAAdAAAAABAn)
+
+[Mariposa](https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.vhv.rs%2Fviewpic%2FhJxTTox_galaga-bugs-hd-png-download%2F&psig=AOvVaw3eImNE-SvPSPc0YfOadKxi&ust=1718939924951000&source=images&cd=vfe&opi=89978449&ved=0CA8QjRxqFwoTCKDJrq6c6YYDFQAAAAAdAAAAABBN)
+
+[Nave](https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.pngwing.com%2Fes%2Ffree-png-yklwg&psig=AOvVaw3eImNE-SvPSPc0YfOadKxi&ust=1718939924951000&source=images&cd=vfe&opi=89978449&ved=0CA8QjRxqFwoTCKDJrq6c6YYDFQAAAAAdAAAAABBX)
+
+[Sprites](https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.spriters-resource.com%2Farcade%2Fgalaga%2Fsheet%2F26482%2F&psig=AOvVaw2Lv7V6U7dzbIu_VRjie-_x&ust=1718940434464000&source=images&cd=vfe&opi=89978449&ved=0CA8QjRxqFwoTCIDqhKGe6YYDFQAAAAAdAAAAABAE)
+
+## Sonidos
+[Efectos](https://downloads.khinsider.com/game-soundtracks/album/galaga-arcade)
+
+
 ![Game Over](https://github.com/JonathanRanGL/galaga/assets/159947420/ae772dd0-ef7b-4627-9fbb-30f455236bdc)
+
+
